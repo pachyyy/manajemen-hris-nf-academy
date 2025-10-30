@@ -10,10 +10,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { absensi, dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { BookOpen, ClipboardList, Folder, IdCard, LayoutGrid, ScrollText } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -21,6 +21,36 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Data Pegawai',
+        href: dataPegawai(),
+        icon: IdCard,
+    },
+    {
+        title: 'Absensi',
+        href: absensi(),
+        icon: IdCard,
+    },
+    {
+        title: 'Penugasan',
+        href: penugasan(),
+        icon: ClipboardList,
+    },
+    {
+        title: 'Evaluasi Kerja',
+        href: evaluasiKerja(),
+        icon: IdCard,
+    },
+    {
+        title: 'Pelatihan',
+        href: pelatihan(),
+        icon: BookOpen,
+    },
+    {
+        title: 'Laporan',
+        href: laporan(),
+        icon: ScrollText,
     },
 ];
 
