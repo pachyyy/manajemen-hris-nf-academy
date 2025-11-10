@@ -26,9 +26,13 @@ class EmployeeController extends Controller
             'join_date' => 'required|date',
             'contact' => 'required|string',
             'status' => 'required|in:aktif,cuti,resign',
-            'document_path' => 'nullable|string',
-            'user_id' => 'required|exists:users,id'
+            'user_id' => 'required|exists:users,id',
+            'document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('document')) {
+            $validated['document_path'] = $request->file('document')->store('documents', 'public');
+        }
 
         $employee = Employee::create($validated);
         return response()->json($employee, 201);
@@ -53,9 +57,13 @@ class EmployeeController extends Controller
             'join_date' => 'date',
             'contact' => 'string',
             'status' => 'in:aktif,cuti,resign',
-            'document_path' => 'nullable|string',
-            'user_id' => 'exists:users,id'
+            'user_id' => 'exists:users,id',
+            'document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('document')) {
+            $validated['document_path'] = $request->file('document')->store('document', 'public');
+        }
 
         $employee->update($validated);
         return response()->json($employee);

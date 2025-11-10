@@ -17,7 +17,8 @@ interface Employee {
     join_date: string;
     contact: string;
     status: 'aktif' | 'cuti' | 'resign';
-    document_path?: string | null;
+    document_path?: string | null; // hasil upload dari server
+    document_file?: File | null; // file yang sedang dipilih user
     user?: { id: number; name: string };
     user_id?: number;
 }
@@ -65,27 +66,33 @@ const DataPegawai: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const method = editingId ? 'PUT' : 'POST';
         const url = editingId
-            ? `/api/employees/${editingId}`
-            : '/api/employees';
+            ? `/api/employees/${editingId}?_method=PUT` // method spoofing
+            : "/api/employees";
 
-        await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form),
-        });
+        const formData = new FormData();
+        formData.append("division", form.division);
+        formData.append("position", form.position);
+        formData.append("join_date", form.join_date);
+        formData.append("contact", form.contact);
+        formData.append("status", form.status);
+        formData.append("user_id", form.user_id?.toString() || "1");
+        if (form.document_file) {
+            formData.append("document", form.document_file);
+        }
+
+        await fetch(url, { method: "POST", body: formData });
 
         setForm({
-            division: '',
-            position: '',
-            join_date: '',
-            contact: '',
-            status: 'aktif',
+            division: "",
+            position: "",
+            join_date: "",
+            contact: "",
+            status: "aktif",
             user_id: 1,
+            document_file: null,
         });
         setEditingId(null);
-
         // Re-fetch setelah CRUD
         await loadEmployees();
     };
@@ -165,6 +172,17 @@ const DataPegawai: React.FC = () => {
                             <option value="cuti">Cuti</option>
                             <option value="resign">Resign</option>
                         </select>
+
+                        <input
+                            type="file"
+                            className="border p-2 rounded"
+                            onChange={(e) =>
+                                setForm({
+                                    ...form,
+                                    document_file: e.target.files?.[0] ?? null,
+                                })
+                            }
+                        />
                     </div>
 
                     <button
@@ -185,6 +203,7 @@ const DataPegawai: React.FC = () => {
                             <th className="border p-2">Posisi</th>
                             <th className="border p-2">Tanggal Bergabung</th>
                             <th className="border p-2">Status</th>
+                            <th className="border p-2">Dokumen</th>
                             <th className="border p-2 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -200,6 +219,20 @@ const DataPegawai: React.FC = () => {
                                 <td className="border p-2">{emp.join_date}</td>
                                 <td className="border p-2 capitalize">
                                     {emp.status}
+                                </td>
+                                <td className="border p-2 text-center">
+                                    {emp.document_path ? (
+                                        <a
+                                            href={`/storage/${emp.document_path}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 underline"
+                                        >
+                                            Lihat
+                                        </a>
+                                    ) : (
+                                        <span className="text-gray-400">—</span>
+                                    )}
                                 </td>
                                 <td className="border p-2 text-center">
                                     <button
