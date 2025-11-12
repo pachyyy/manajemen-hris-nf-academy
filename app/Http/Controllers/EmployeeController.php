@@ -21,13 +21,14 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'division' => 'required|string',
             'position' => 'required|string',
             'join_date' => 'required|date',
-            'contact' => 'required|string',
+            'email' => 'required|string',
+            'phone' => 'required|string',
             'status' => 'required|in:aktif,cuti,resign',
-            'document_path' => 'nullable|string',
-            'user_id' => 'required|exists:users,id'
         ]);
 
         $employee = Employee::create($validated);
@@ -48,13 +49,14 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $validated = $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'division' => 'string',
             'position' => 'string',
             'join_date' => 'date',
-            'contact' => 'string',
+            'email' => 'required|string',
+            'phone' => 'required|number',
             'status' => 'in:aktif,cuti,resign',
-            'document_path' => 'nullable|string',
-            'user_id' => 'exists:users,id'
         ]);
 
         $employee->update($validated);

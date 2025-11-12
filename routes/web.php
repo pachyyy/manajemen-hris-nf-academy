@@ -16,6 +16,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    Route::get('dashboard/roles', function() {
+        return Inertia::render(component: 'roles/showRoles');
+    })->middleware('admin')->name('dashboard.roles');
+
+    Route::get('dashboard/employees', function() {
+        return Inertia::render(component: 'employees/showEmployees');
+    })->middleware('admin')->name('dashboard.employees');
+
+    Route::get('dashboard/employees/add', function() {
+        return Inertia::render(component: 'employees/addEmployee');
+    })->middleware('admin')->name('dashboard.employees');
+
     Route::get('dataPegawai', function () {
         return Inertia::render('dataPegawai');
     })->name('dataPegawai');

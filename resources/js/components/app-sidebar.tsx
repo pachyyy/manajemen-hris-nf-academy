@@ -11,21 +11,24 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { absensi, dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, ClipboardList, Folder, IdCard, LayoutGrid, ScrollText } from 'lucide-react';
+import { type NavItem, type PageProps } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, ClipboardList, IdCard, ScrollText, UserCog, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+// --- Navigation Items for Each Role ---
+
+// For 'Admin HR' role
+const adminNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        title: 'Employee Management',
+        href: '/dashboard/employees',
+        icon: Users,
     },
     {
-        title: 'Data Pegawai',
-        href: dataPegawai(),
-        icon: IdCard,
+        title: 'Role Management',
+        href: '/dashboard/roles',
+        icon: UserCog,
     },
     {
         title: 'Absensi',
@@ -54,20 +57,67 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
+// For a potential 'HR' role (template)
+const hrNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'Data Pegawai',
+        href: dataPegawai(),
+        icon: Users,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
+        title: 'Absensi',
+        href: absensi(),
+        icon: IdCard,
+    },
+    {
+        title: 'Evaluasi Kerja',
+        href: evaluasiKerja(),
+        icon: IdCard,
+    },
+    {
+        title: 'Pelatihan',
+        href: pelatihan(),
         icon: BookOpen,
     },
 ];
 
+// For a general 'Employee' role (template)
+const employeeNavItems: NavItem[] = [
+    {
+        title: 'Absensi',
+        href: absensi(),
+        icon: IdCard,
+    },
+    {
+        title: 'Penugasan',
+        href: penugasan(),
+        icon: ClipboardList,
+    },
+    {
+        title: 'Pelatihan',
+        href: pelatihan(),
+        icon: BookOpen,
+    },
+];
+
+
+// Function to get the appropriate navigation items based on user role
+const getNavItems = (roleName?: string): NavItem[] => {
+    switch (roleName) {
+        case 'Admin':
+            return adminNavItems;
+        case 'HR': // Example for a future HR ro    le
+            return hrNavItems;
+        default:
+            return employeeNavItems; // Default for employees and other roles
+    }
+};
+
 export function AppSidebar() {
+    const { auth } = usePage<PageProps>().props;
+    const userRole = auth.user?.role?.name;
+    const mainNavItems = getNavItems(userRole);
+
     return (
         <Sidebar collapsible="icon" variant="floating">
             <SidebarHeader>
@@ -87,7 +137,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
