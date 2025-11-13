@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('email');
+            $table->string('phone');
+            $table->date('birth_date');
             $table->string('division');
             $table->string('position');
             $table->date('join_date');
-            $table->string('email');
-            $table->string('phone');
             $table->enum('status', ['aktif', 'cuti', 'resign'])->default('aktif');
             $table->text('document_path')->nullable();
             $table->timestamps();
@@ -33,4 +34,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('employees');
     }
+
 };

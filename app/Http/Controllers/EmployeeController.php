@@ -23,11 +23,12 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string',
             'last_name' => 'required|string',
+            'email' => 'required|string',
+            'phone' => 'required|string',
+            'birth_date' => 'required|date',
             'division' => 'required|string',
             'position' => 'required|string',
             'join_date' => 'required|date',
-            'email' => 'required|string',
-            'phone' => 'required|string',
             'status' => 'required|in:aktif,cuti,resign',
         ]);
 
@@ -49,13 +50,14 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'division' => 'string',
-            'position' => 'string',
+            'first_name' => 'sometimes|string',
+            'last_name' => 'sometimes|string',
+            'email' => 'sometimes|string',
+            'phone' => 'sometimes|string',
+            'birth_date' => 'sometimes|date',
+            'division' => 'sometimes|string',
+            'position' => 'sometimes|string',
             'join_date' => 'date',
-            'email' => 'required|string',
-            'phone' => 'required|number',
             'status' => 'in:aktif,cuti,resign',
         ]);
 

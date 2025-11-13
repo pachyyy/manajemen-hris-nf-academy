@@ -98,7 +98,7 @@ export default function ShowRoles() {
     ];
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="flex justify-center align-center px-2">
+            <div className="flex justify-center align-center p-3">
                 <h1 className="text-3xl font-bold">Role List</h1>
                 <div className="absolute z-10 right-2 ">
                     <Button className="cursor-pointer" onClick={() => setIsAddModalOpen(true)}>
@@ -147,7 +147,7 @@ export default function ShowRoles() {
                                         <Ellipsis className="text-white hover:text-gray-500" />
                                     </Button>
                                     {openDropdownId === role.id && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-neutral-900 rounded-md shadow-lg z-50">
+                                        <div className="fixed lg:right-7 md:right-4 mt-2 w-24 bg-neutral-900 rounded-md shadow-lg z-50">
                                             <Button
                                                 onClick={() =>
                                                     handleDeleteClick(role.id)

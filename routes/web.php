@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -20,13 +21,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render(component: 'roles/showRoles');
     })->middleware('admin')->name('dashboard.roles');
 
+    // employee routing
     Route::get('dashboard/employees', function() {
         return Inertia::render(component: 'employees/showEmployees');
     })->middleware('admin')->name('dashboard.employees');
 
     Route::get('dashboard/employees/add', function() {
         return Inertia::render(component: 'employees/addEmployee');
-    })->middleware('admin')->name('dashboard.employees');
+    })->middleware('admin')->name('dashboard.employees.add');
+
+    Route::post('dashboard/employees', [EmployeeController::class, 'store'])->middleware('admin')->name('dashboard.employees.store');
+
+    Route::get('dashboard/employees/update/{id}', function($id) {
+        return Inertia::render('employees/updateEmployee', [
+            'id' => $id,
+        ]);
+    })->middleware('admin')->name('dashboard.employees.update');
 
     Route::get('dataPegawai', function () {
         return Inertia::render('dataPegawai');

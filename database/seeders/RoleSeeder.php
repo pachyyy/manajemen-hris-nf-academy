@@ -21,9 +21,10 @@ class RoleSeeder extends Seeder
                 'name' => 'Human Resource',
                 'description' => 'Bertugas sebagai HR untuk mengontrol para pegawai NF Academy.'
             ],
-            ['name' => 'Marketing', 'description' => 'Bertugas untuk mempromosikan NF Academy guna meningkatkan jumlah murid.'],
-            ['name' => 'Operasional', 'description' => 'Bertugas untuk mengurus setiap operasional dalam NF Academy.'],
-            ['name' => 'Riset dan Pengembangan', 'description' => 'Bertugas untuk mempelajari data yang ada guna mengembangkan pembelajaran pada NF Academy.'],
+            [
+                'name' => 'Staff',
+                'description' => 'Staff biasa'
+            ]
         ];
 
         foreach ($roles as $role) {

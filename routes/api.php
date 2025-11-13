@@ -10,6 +10,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('employees', EmployeeController::class)->middleware('admin');
+Route::apiResource('employees', EmployeeController::class)->middleware('admin');
     Route::apiResource('roles', RoleController::class)->middleware('admin');
 });

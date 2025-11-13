@@ -1,4 +1,4 @@
-import { NavFooter } from '@/components/nav-footer';
+// import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -13,7 +13,7 @@ import {
 import { absensi, dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, ClipboardList, IdCard, ScrollText, UserCog, Users } from 'lucide-react';
+import { BookOpen, ClipboardList, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // --- Navigation Items for Each Role ---
@@ -55,6 +55,11 @@ const adminNavItems: NavItem[] = [
         href: laporan(),
         icon: ScrollText,
     },
+    {
+        title: 'Messages',
+        href: '/dashboard/messages',
+        icon: Mail,
+    }
 ];
 
 // For a potential 'HR' role (template)
@@ -79,6 +84,11 @@ const hrNavItems: NavItem[] = [
         href: pelatihan(),
         icon: BookOpen,
     },
+    {
+        title: 'Messages',
+        href: '/dashboard/messages',
+        icon: Mail,
+    }
 ];
 
 // For a general 'Employee' role (template)
@@ -98,8 +108,12 @@ const employeeNavItems: NavItem[] = [
         href: pelatihan(),
         icon: BookOpen,
     },
+    {
+        title: 'Messages',
+        href: '/dashboard/messages',
+        icon: Mail,
+    }
 ];
-
 
 // Function to get the appropriate navigation items based on user role
 const getNavItems = (roleName?: string): NavItem[] => {
