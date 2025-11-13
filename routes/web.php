@@ -38,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->middleware('admin')->name('dashboard.employees.update');
 
+    Route::get('dashboard/employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('admin')->name('dashboard.employees.account');
+
     Route::get('dataPegawai', function () {
         return Inertia::render('dataPegawai');
     })->name('dataPegawai');

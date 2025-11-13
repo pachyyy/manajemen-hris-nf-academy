@@ -203,10 +203,12 @@ export default function ShwoEmployees() {
                                             <Button className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800">
                                                 See documents
                                             </Button>
-                                            <Button className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800">
-                                                {/* Untuk lihat dan buat akun untuk pengguna / karyawan nantinya */}
-                                                Check account
-                                            </Button>
+                                            <Link href={`/dashboard/employees/account/${post.id}`}>
+                                                <Button className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800">
+                                                    {/* Untuk lihat dan buat akun untuk pengguna / karyawan nantinya */}
+                                                    Check account
+                                                </Button>
+                                            </Link>
                                         </div>
                                     )}
                                 </div>

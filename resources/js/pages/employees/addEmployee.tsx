@@ -12,9 +12,9 @@ export default function AddEmployee() {
         email: '',
         phone: '',
         birth_date: '',
-        division: 'Admin',
-        position: 'Direktur',
-        status: 'Aktif',
+        division: 'admin',
+        position: 'direktur',
+        status: 'aktif',
         join_date: '',
     });
     const [error, setError] = useState<string | null>(null);
@@ -35,15 +35,11 @@ export default function AddEmployee() {
         e.preventDefault();
         setError(null);
 
-        const postData = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-            postData.append(key, value);
-        });
-
         try {
             const response = await fetch('/api/employees', {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     Accept: 'application/json',
                     'X-CSRF-TOKEN':
                         (
@@ -52,7 +48,7 @@ export default function AddEmployee() {
                             ) as HTMLMetaElement
                         )?.content || '',
                 },
-                body: postData,
+                body: JSON.stringify(formData),
                 credentials: 'include',
             });
 
