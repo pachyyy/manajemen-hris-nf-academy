@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
@@ -81,8 +82,10 @@ class EmployeeController extends Controller
     public function showAccount($id)
     {
         $employee = Employee::with('user')->findOrFail($id);
+        $roles = Role::all();
         return Inertia::render('employees/employeeAccount', [
-            'employee' => $employee
+            'employee' => $employee,
+            'roles' => $roles,
         ]);
     }
 
@@ -138,5 +141,19 @@ class EmployeeController extends Controller
             'message' => 'Password reset successfully',
             'password' => $newPassword
         ]);
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        $user->role_id = $validated['role_id'];
+        $user->save();
+
+        return response()->json($user);
     }
 }

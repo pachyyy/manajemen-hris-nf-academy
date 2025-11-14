@@ -141,10 +141,9 @@ export default function ShowRoles() {
                             <TableCell className="overflow-visible">
                                 <div className="relative">
                                     <Button
-                                        className="bg-neutral-900 hover:bg-neutral-700 cursor-pointer"
                                         onClick={() => toggleDropdown(role.id)}
                                     >
-                                        <Ellipsis className="text-white hover:text-gray-500" />
+                                        <Ellipsis/>
                                     </Button>
                                     {openDropdownId === role.id && (
                                         <div className="fixed lg:right-7 md:right-4 mt-2 w-24 bg-neutral-900 rounded-md shadow-lg z-50">

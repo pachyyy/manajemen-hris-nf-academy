@@ -1,8 +1,24 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { ChevronDownIcon } from 'lucide-react';
 import React, { useState } from 'react';
 
 export default function AddEmployee() {
@@ -18,6 +34,14 @@ export default function AddEmployee() {
         join_date: '',
     });
     const [error, setError] = useState<string | null>(null);
+    const [birthDate, setBirthDate] = React.useState<Date | undefined>(
+        undefined,
+    );
+    const [openBirthDate, setOpenBirthDate] = React.useState(false);
+    const [joinDate, setJoinDate] = React.useState<Date | undefined>(
+        undefined,
+    );
+    const [openJoinDate, setOpenJoinDate] = React.useState(false);
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -68,6 +92,7 @@ export default function AddEmployee() {
     };
 
     const labelClassname = 'text-sm px-1';
+    const divClassname = 'flex flex-col gap-2';
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Employees', href: '/dashboard/employees' },
@@ -76,178 +101,295 @@ export default function AddEmployee() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+            <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
                 <h3 className="text-xl leading-6 font-bold text-gray-900 dark:text-white">
                     Add New Employee
                 </h3>
                 <div className="mt-2">
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4 w-2xl">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div>
-                                <label
+                            <div className={divClassname}>
+                                <Label
                                     htmlFor="first_name"
                                     className={labelClassname}
                                 >
                                     First Name
-                                </label>
-                                <input
+                                </Label>
+                                <Input
                                     type="text"
                                     name="first_name"
                                     placeholder="e.g. John"
                                     onChange={handleChange}
                                     required
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                                 />
                             </div>
 
-                            <div>
-                                <label
+                            <div className={divClassname}>
+                                <Label
                                     htmlFor="last_name"
                                     className={labelClassname}
                                 >
                                     Last Name
-                                </label>
-                                <input
+                                </Label>
+                                <Input
                                     type="text"
                                     name="last_name"
                                     placeholder="e.g. Doe"
                                     onChange={handleChange}
                                     required
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                                 />
                             </div>
 
-                            <div className="col-span-2">
-                                <label
+                            <div className="col-span-2 flex flex-col gap-2">
+                                <Label
                                     htmlFor="email"
                                     className={labelClassname}
                                 >
                                     Email
-                                </label>
-                                <input
+                                </Label>
+                                <Input
                                     type="email"
                                     name="email"
                                     placeholder="e.g. johndoe123@gmail.com"
                                     onChange={handleChange}
                                     required
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                                 />
                             </div>
 
-                            <div>
-                                <label
+                            <div className={divClassname}>
+                                <Label
                                     htmlFor="phone"
                                     className={labelClassname}
                                 >
                                     Phone Number
-                                </label>
-                                <input
-                                    type="tel"
+                                </Label>
+                                <Input
+                                    type="text"
                                     name="phone"
                                     placeholder="e.g. 08123456789"
                                     onChange={handleChange}
                                     required
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                                 />
                             </div>
 
-                            <div>
-                                <label
+                            <div className={divClassname}>
+                                <Label
                                     htmlFor="birth_date"
                                     className={labelClassname}
                                 >
-                                    Birth Date
-                                </label>
-                                <input
-                                    type="date"
-                                    name="birth_date"
-                                    onChange={handleChange}
-                                    required
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                                />
+                                    Date of birth
+                                </Label>
+                                <Popover
+                                    open={openBirthDate}
+                                    onOpenChange={setOpenBirthDate}
+                                >
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            id="birth_date"
+                                            className="w-full justify-between font-normal"
+                                        >
+                                            {birthDate
+                                                ? birthDate.toLocaleDateString(
+                                                      'en-CA',
+                                                  )
+                                                : 'Select date'}
+                                            <ChevronDownIcon />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        className="w-auto overflow-hidden p-0"
+                                        align="start"
+                                    >
+                                        <Calendar
+                                            mode="single"
+                                            selected={birthDate}
+                                            captionLayout="dropdown"
+                                            onSelect={(selectedDate) => {
+                                                setBirthDate(selectedDate);
+                                                setOpenBirthDate(false);
+                                                setFormData((prevState) => ({
+                                                    ...prevState,
+                                                    birth_date: selectedDate
+                                                        ? selectedDate.toLocaleDateString(
+                                                              'en-CA',
+                                                          )
+                                                        : '',
+                                                }));
+                                            }}
+                                            required
+                                        />
+                                    </PopoverContent>
+                                </Popover>
                             </div>
 
                             <div>
-                                <label
+                                <Label
                                     htmlFor="division"
                                     className={labelClassname}
                                 >
                                     Division
-                                </label>
-                                <select
-                                    name="division"
-                                    id="division"
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                                    onChange={handleChange}
+                                </Label>
+                                <Select
+                                    onValueChange={(value) =>
+                                        setFormData((prevState) => ({
+                                            ...prevState,
+                                            division: value,
+                                        }))
+                                    }
                                     required
-                                    value={formData.division}
                                 >
-                                    <option value="-">-</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Marketing">Marketing</option>
-                                    <option value="Operasional">
-                                        Operasional
-                                    </option>
-                                    <option value="Riset dan Pengembangan">
-                                        Riset dan Pengembangan
-                                    </option>
-                                </select>
+                                <SelectTrigger
+                                        id="division"
+                                        value={formData.division}
+                                    >
+                                        <SelectValue placeholder="Select Division" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="-">
+                                            -
+                                        </SelectItem>
+                                        <SelectItem value="admin">
+                                            Admin
+                                        </SelectItem>
+                                        <SelectItem value="marketing">
+                                            Marketing
+                                        </SelectItem>
+                                        <SelectItem value="operasional">
+                                            Operasional
+                                        </SelectItem>
+                                        <SelectItem value="riset dan pengembangan">
+                                            Riset dan Pengembangan
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <div>
-                                <label
+                                <Label
                                     htmlFor="position"
                                     className={labelClassname}
                                 >
                                     Position
-                                </label>
-                                <select
-                                    name="position"
-                                    id="position"
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                                    onChange={handleChange}
+                                </Label>
+                                <Select
+                                    onValueChange={(value) =>
+                                        setFormData((prevState) => ({
+                                            ...prevState,
+                                            position: value,
+                                        }))
+                                    }
                                     required
-                                    value={formData.position}
                                 >
-                                    <option value="direktur">Direktur</option>
-                                    <option value="manager">Manager</option>
-                                    <option value="staff">Staff</option>
-                                </select>
+                                    <SelectTrigger
+                                        className="w-full"
+                                        name="position"
+                                        id="position"
+                                        value={formData.position}
+                                    >
+                                        <SelectValue placeholder="Select Position" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="direktur">
+                                            Direktur
+                                        </SelectItem>
+                                        <SelectItem value="manager">
+                                            Manager
+                                        </SelectItem>
+                                        <SelectItem value="staff">
+                                            Staff
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
-                            <div>
-                                <label
+                            <div className={divClassname}>
+                                <Label
                                     htmlFor="join_date"
                                     className={labelClassname}
                                 >
-                                    Join date
-                                </label>
-                                <input
-                                    type="date"
-                                    name="join_date"
-                                    onChange={handleChange}
-                                    required
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                                />
+                                    Join Date
+                                </Label>
+                                <Popover
+                                    open={openJoinDate}
+                                    onOpenChange={setOpenJoinDate}
+                                >
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            id="date"
+                                            className="w-full justify-between font-normal"
+                                        >
+                                            {joinDate
+                                                ? joinDate.toLocaleDateString(
+                                                      'en-CA',
+                                                  )
+                                                : 'Select date'}
+                                            <ChevronDownIcon />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        className="w-auto overflow-hidden p-0"
+                                        align="start"
+                                    >
+                                        <Calendar
+                                            mode="single"
+                                            selected={joinDate}
+                                            captionLayout="dropdown"
+                                            onSelect={(selectedDate) => {
+                                                setJoinDate(selectedDate);
+                                                setOpenJoinDate(false);
+                                                setFormData((prevState) => ({
+                                                    ...prevState,
+                                                    join_date: selectedDate
+                                                        ? selectedDate.toLocaleDateString(
+                                                              'en-CA',
+                                                          )
+                                                        : '',
+                                                }));
+                                            }}
+                                            required
+                                        />
+                                    </PopoverContent>
+                                </Popover>
                             </div>
 
-                            <div>
-                                <label
+                            <div className={divClassname}>
+                                <Label
                                     htmlFor="status"
                                     className={labelClassname}
                                 >
                                     Status
-                                </label>
-                                <select
-                                    name="status"
-                                    onChange={handleChange}
-                                    value={formData.status}
-                                    className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
+                                </Label>
+                                <Select
+                                    onValueChange={(value) =>
+                                        setFormData((prevState) => ({
+                                            ...prevState,
+                                            status: value,
+                                        }))
+                                    }
+                                    required
                                 >
-                                    <option value="aktif">Aktif</option>
-                                    <option value="cuti">Cuti</option>
-                                    <option value=" resign">Resign</option>
-                                </select>
+                                    <SelectTrigger
+                                        className="w-full"
+                                        name="status"
+                                        id="status"
+                                        value={formData.status}
+                                    >
+                                        <SelectValue placeholder="Select Status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="aktif">
+                                            Aktif
+                                        </SelectItem>
+                                        <SelectItem value="cuti">
+                                            Cuti
+                                        </SelectItem>
+                                        <SelectItem value="Resign">
+                                            Resign
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 
@@ -256,6 +398,7 @@ export default function AddEmployee() {
                                 {error}
                             </div>
                         )}
+
                         <div className="flex justify-end space-x-2">
                             <Button
                                 type="button"
@@ -266,7 +409,6 @@ export default function AddEmployee() {
                             </Button>
                             <Button
                                 type="submit"
-                                className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
                             >
                                 Add Employee
                             </Button>

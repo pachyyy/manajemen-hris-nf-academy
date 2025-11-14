@@ -1,8 +1,24 @@
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { useCallback, useEffect, useState } from 'react';
+import { ChevronDownIcon } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface Employee {
     id: number;
@@ -36,6 +52,15 @@ export default function UpdateEmployee() {
         status: '',
         join_date: '',
     });
+    const [birthDate, setBirthDate] = React.useState<Date | undefined>(
+        undefined,
+    );
+    const [openBirthDate, setOpenBirthDate] = React.useState(false);
+    const [joinDate, setJoinDate] = React.useState<Date | undefined>(undefined);
+    const [openJoinDate, setOpenJoinDate] = React.useState(false);
+    const [ divisionValue, setDivisionValue ] = useState(formData.division);
+    const [ positionValue, setPositionValue ] = useState(formData.position);
+    const [ statusValue, setStatusValue ] = useState(formData.status);
 
     const fetchData = useCallback(async () => {
         try {
@@ -63,13 +88,19 @@ export default function UpdateEmployee() {
                 birth_date: data.birth_date
                     ? new Date(data.birth_date).toISOString().split('T')[0]
                     : '',
-                division: data.division.trim(),
-                position: data.position.trim(),
-                status: data.status.trim(),
+                division: data.division.trim().toLowerCase(),
+                position: data.position.trim().toLowerCase(),
+                status: data.status.trim().toLowerCase(),
                 join_date: data.join_date
                     ? new Date(data.join_date).toISOString().split('T')[0]
                     : '',
             });
+            if (data.birth_date) {
+                setBirthDate(new Date(data.birth_date));
+            }
+            if (data.join_date) {
+                setJoinDate(new Date(data.join_date));
+            }
         } catch (error) {
             console.error('Failed to fetch employees: ', error);
             setError('Failed to fetch employees. ');
@@ -138,10 +169,14 @@ export default function UpdateEmployee() {
     };
 
     useEffect(() => {
+        setDivisionValue(formData.division);
+        setPositionValue(formData.position);
+        setStatusValue(formData.status);
         fetchData();
-    }, [id, fetchData]);
+    }, [id, fetchData, formData]);
 
     const labelClassname = 'text-sm px-1';
+    const divClassname = 'flex flex-col gap-2';
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Employees', href: '/dashboard/employees' },
@@ -149,178 +184,279 @@ export default function UpdateEmployee() {
     ];
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+            <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
                 <div>
-                    <h1 className='text-2xl font-bold'>Update Employee</h1>
+                    <h1 className="text-2xl font-bold">Update Employee</h1>
                 </div>
-                <form onSubmit={handleSubmit} className="w-2xl">
+                <form onSubmit={handleSubmit} className="space-y-4 w-2xl">
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div>
-                            <label
+                        <div className={divClassname}>
+                            <Label
                                 htmlFor="first_name"
                                 className={labelClassname}
                             >
                                 First Name
-                            </label>
-                            <input
+                            </Label>
+                            <Input
                                 type="text"
                                 name="first_name"
                                 placeholder="e.g. John"
                                 onChange={handleChange}
                                 required
                                 value={formData.first_name}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                             />
                         </div>
 
-                        <div>
-                            <label
+                        <div className={divClassname}>
+                            <Label
                                 htmlFor="last_name"
                                 className={labelClassname}
                             >
                                 Last Name
-                            </label>
-                            <input
+                            </Label>
+                            <Input
                                 type="text"
                                 name="last_name"
                                 placeholder="e.g. Doe"
                                 onChange={handleChange}
                                 required
                                 value={formData.last_name}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                             />
                         </div>
 
-                        <div className="col-span-2">
-                            <label htmlFor="email" className={labelClassname}>
+                        <div className="flex flex-col gap-2 col-span-2">
+                            <Label htmlFor="email" className={labelClassname}>
                                 Email
-                            </label>
-                            <input
+                            </Label>
+                            <Input
                                 type="email"
                                 name="email"
                                 placeholder="e.g. johndoe123@gmail.com"
                                 onChange={handleChange}
                                 required
                                 value={formData.email}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                             />
                         </div>
 
-                        <div>
-                            <label htmlFor="phone" className={labelClassname}>
+                        <div className={divClassname}>
+                            <Label htmlFor="phone" className={labelClassname}>
                                 Phone Number
-                            </label>
-                            <input
+                            </Label>
+                            <Input
                                 type="tel"
                                 name="phone"
                                 placeholder="e.g. 08123456789"
                                 onChange={handleChange}
                                 required
                                 value={formData.phone}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
                             />
                         </div>
 
-                        <div>
-                            <label
+                        <div className={divClassname}>
+                            <Label
                                 htmlFor="birth_date"
                                 className={labelClassname}
                             >
                                 Birth Date
-                            </label>
-                            <input
-                                type="date"
-                                name="birth_date"
-                                onChange={handleChange}
-                                required
-                                value={formData.birth_date}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                            />
+                            </Label>
+                            <Popover
+                                open={openBirthDate}
+                                onOpenChange={setOpenBirthDate}
+                            >
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        id="birth_date"
+                                        className="w-full justify-between font-normal"
+                                    >
+                                        {birthDate
+                                            ? birthDate.toLocaleDateString(
+                                                  'en-CA',
+                                              )
+                                            : 'Select date'}
+                                        <ChevronDownIcon />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                    className="w-auto overflow-hidden p-0"
+                                    align="start"
+                                >
+                                    <Calendar
+                                        mode="single"
+                                        selected={birthDate}
+                                        captionLayout="dropdown"
+                                        onSelect={(selectedDate) => {
+                                            setBirthDate(selectedDate);
+                                            setOpenBirthDate(false);
+                                            setFormData((prevState) => ({
+                                                ...prevState,
+                                                birth_date: selectedDate
+                                                    ? selectedDate.toLocaleDateString(
+                                                          'en-CA',
+                                                      )
+                                                    : '',
+                                            }));
+                                        }}
+                                        required
+                                    />
+                                </PopoverContent>
+                            </Popover>
                         </div>
 
-                        <div>
-                            <label
+                        <div className={divClassname}>
+                            <Label
                                 htmlFor="division"
                                 className={labelClassname}
                             >
                                 Division
-                            </label>
-                            <select
-                                name="division"
-                                id="division"
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                                onChange={handleChange}
+                            </Label>
+                            <Select
+                                onValueChange={(value) => {
+                                    setDivisionValue(value);
+                                }}
+                                value={divisionValue}
                                 required
-                                value={formData.division}
                             >
-                                <option value="-">-</option>
-                                <option value="admin">Admin</option>
-                                <option value="marketing">Marketing</option>
-                                <option value="operasional">Operasional</option>
-                                <option value="riset dan pengembangan">
-                                    Riset dan Pengembangan
-                                </option>
-                            </select>
+                                <SelectTrigger
+                                    id="division">
+                                    <SelectValue placeholder="Select Division" />
+                                </SelectTrigger>
+                                <SelectContent
+                                >
+                                    <SelectItem value="-">-</SelectItem>
+                                    <SelectItem value="admin">Admin</SelectItem>
+                                    <SelectItem value="marketing">
+                                        Marketing
+                                    </SelectItem>
+                                    <SelectItem value="operasional">
+                                        Operasional
+                                    </SelectItem>
+                                    <SelectItem value="riset dan pengembangan">
+                                        Riset dan Pengembangan
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        <div>
-                            <label
+                        <div className={divClassname}>
+                            <Label
                                 htmlFor="position"
                                 className={labelClassname}
                             >
                                 Position
-                            </label>
-                            <select
-                                name="position"
-                                id="position"
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                                onChange={handleChange}
+                            </Label>
+                            <Select
+                                onValueChange={(value)=>{
+                                    setPositionValue(value);
+                                }}
+                                value={positionValue}
                                 required
-                                value={formData.position}
                             >
-                                <option value="direktur">Direktur</option>
-                                <option value="manager">Manager</option>
-                                <option value="staff">Staff</option>
-                            </select>
+                                <SelectTrigger
+                                    className="w-full"
+                                    name="position"
+                                    id="position"
+                                    value={formData.position}
+                                >
+                                    <SelectValue placeholder="Select Position" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="direktur">
+                                        Direktur
+                                    </SelectItem>
+                                    <SelectItem value="manager">
+                                        Manager
+                                    </SelectItem>
+                                    <SelectItem value="staff">Staff</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        <div>
-                            <label
+                        <div className={divClassname}>
+                            <Label
                                 htmlFor="join_date"
                                 className={labelClassname}
                             >
                                 Join date
-                            </label>
-                            <input
-                                type="date"
-                                name="join_date"
-                                onChange={handleChange}
-                                required
-                                value={formData.join_date}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
-                            />
+                            </Label>
+                            <Popover
+                                open={openJoinDate}
+                                onOpenChange={setOpenJoinDate}
+                            >
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        id="date"
+                                        className="w-full justify-between font-normal"
+                                    >
+                                        {joinDate
+                                            ? joinDate.toLocaleDateString(
+                                                  'en-CA',
+                                              )
+                                            : 'Select date'}
+                                        <ChevronDownIcon />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                    className="w-auto overflow-hidden p-0"
+                                    align="start"
+                                >
+                                    <Calendar
+                                        mode="single"
+                                        selected={joinDate}
+                                        captionLayout="dropdown"
+                                        onSelect={(selectedDate) => {
+                                            setJoinDate(selectedDate);
+                                            setOpenJoinDate(false);
+                                            setFormData((prevState) => ({
+                                                ...prevState,
+                                                join_date: selectedDate
+                                                    ? selectedDate.toLocaleDateString(
+                                                          'en-CA',
+                                                      )
+                                                    : '',
+                                            }));
+                                        }}
+                                        required
+                                    />
+                                </PopoverContent>
+                            </Popover>
                         </div>
 
-                        <div>
-                            <label htmlFor="status" className={labelClassname}>
+                        <div className={divClassname}>
+                            <Label htmlFor="status" className={labelClassname}>
                                 Status
-                            </label>
-                            <select
-                                name="status"
-                                onChange={handleChange}
-                                value={formData.status}
-                                className="focus:ring-opacity-50 mt-1 block w-full rounded-md border-gray-300 p-2 text-black shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200"
+                            </Label>
+                            <Select
+                                onValueChange={(value)=>{
+                                    setStatusValue(value);
+                                }}
+                                value={statusValue}
+                                required
                             >
-                                <option value="aktif">Aktif</option>
-                                <option value="cuti">Cuti</option>
-                                <option value="resign">Resign</option>
-                            </select>
+                                <SelectTrigger
+                                    className="w-full"
+                                    name="status"
+                                    id="status"
+                                    value={formData.status}
+                                >
+                                    <SelectValue placeholder="Select Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="aktif">Aktif</SelectItem>
+                                    <SelectItem value="cuti">Cuti</SelectItem>
+                                    <SelectItem value="resign">
+                                        Resign
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
                     {error && (
                         <div className="mb-4 text-sm text-red-500">{error}</div>
                     )}
+
                     <div className="flex justify-end space-x-2">
                         <Button
                             type="button"
@@ -329,12 +465,7 @@ export default function UpdateEmployee() {
                         >
                             Cancel
                         </Button>
-                        <Button
-                            type="submit"
-                            className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-                        >
-                            Update Employee
-                        </Button>
+                        <Button type="submit">Update Employee</Button>
                     </div>
                 </form>
             </div>

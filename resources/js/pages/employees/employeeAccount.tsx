@@ -1,18 +1,30 @@
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Employee, User } from '@/types';
+import { BreadcrumbItem, Employee, User, Role } from '@/types';
 import { usePage, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 interface PageProps {
     employee: Employee & { user: User | null };
+    roles: Role[];
 }
 
 export default function EmployeeAccount() {
-    const { employee } = usePage<PageProps>().props;
+    const { employee, roles } = usePage<PageProps>().props;
     const [error, setError] = useState<string | null>(null);
     const [displayPassword, setDisplayPassword] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [selectedRole, setSelectedRole] = useState<string>(
+        employee.user?.role_id?.toString() || '',
+    );
 
     useEffect(() => {
         const storedPassword = sessionStorage.getItem('generatedPassword');
@@ -124,6 +136,39 @@ export default function EmployeeAccount() {
         }
     };
 
+    const updateRole = async () => {
+        if (!employee.user) return;
+
+        try {
+            const response = await fetch(
+                `/api/employees/account/${employee.user.id}/role`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN':
+                            (
+                                document.querySelector(
+                                    'meta[name="csrf-token"]',
+                                ) as HTMLMetaElement
+                            )?.content || '',
+                    },
+                    body: JSON.stringify({ role_id: selectedRole }),
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to update role');
+            }
+
+            router.reload({ only: ['employee'] });
+            alert('Role updated successfully!');
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="space-y-4">
@@ -150,7 +195,58 @@ export default function EmployeeAccount() {
                         <p>
                             An account already exists for this employee.
                         </p>
+                        <div className="mt-4 max-w-44">
+                            <Label
+                                htmlFor="role"
+                                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                            >
+                                Role
+                            </Label>
+                                {/* <select
+                                    id="role"
+                                    name="role"
+                                    value={selectedRole}
+                                    onChange={(e) =>
+                                        setSelectedRole(e.target.value)
+                                    }
+                                    className=" block rounded-md border-2  border-gray-300 focus:border-gray-700 py-2 pl-3 pr-10 text-base  focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-neutral-700 sm:text-sm"
+                                >
+                                    <option value="">Select a role</option>
+                                    {roles.map((role) => (
+                                        <option key={role.id} value={role.id}>
+                                            {role.name}
+                                        </option>
+                                    ))}
+                                </select> */}
+                            <Select
+                                onValueChange={(value) => {
+                                    setSelectedRole(value);
+                                }}
+                                value={selectedRole}
+                                required
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Role" />
+                                </SelectTrigger>
+                                <SelectContent >
+                                    {roles.map((role) => (
+                                        <SelectItem
+                                            key={role.id}
+                                            value={role.id.toString()}
+                                        >
+                                            {role.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="flex space-x-2 mt-4">
+                            <Button
+                                onClick={updateRole}
+                                className="bg-green-600 text-white hover:bg-green-700"
+                            >
+                                Update Role
+                            </Button>
                             <Button
                                 onClick={resetPassword}
                                 className="bg-blue-600 text-white hover:bg-blue-700"

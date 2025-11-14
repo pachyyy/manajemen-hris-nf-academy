@@ -1,6 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
 
 interface AddRoleModalProps {
     onClose: () => void;
@@ -48,10 +52,11 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({ onClose, onRoleAdded }) => 
                 <div className="mt-2">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                            <input
+                            <Label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</Label>
+                            <Input
                                 type="text"
                                 id="name"
+                                placeholder='e.g. Admin'
                                 className="p-2 text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -60,30 +65,31 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({ onClose, onRoleAdded }) => 
                         </div>
                         <div className="mb-4">
                             <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea
+                            <Textarea
                                 id="description"
                                 rows={3}
+                                placeholder='e.g. Mengontrol penuh sistem'
                                 className="p-2 text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 required
-                            ></textarea>
+                            />
                         </div>
                         {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
                         <div className="flex justify-end space-x-2">
-                            <button
+                            <Button
                                 type="button"
                                 onClick={onClose}
                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
                             >
                                 Cancel
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="submit"
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                                className="px-4 py-2 "
                             >
                                 Add Role
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>

@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { absensi, dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
+import { dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, ClipboardList, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
@@ -32,7 +32,7 @@ const adminNavItems: NavItem[] = [
     },
     {
         title: 'Absensi',
-        href: absensi(),
+        href: '/dashboard/absensi',
         icon: IdCard,
     },
     {
@@ -71,7 +71,7 @@ const hrNavItems: NavItem[] = [
     },
     {
         title: 'Absensi',
-        href: absensi(),
+        href: '/dashboard/absensi',
         icon: IdCard,
     },
     {
@@ -95,7 +95,7 @@ const hrNavItems: NavItem[] = [
 const employeeNavItems: NavItem[] = [
     {
         title: 'Absensi',
-        href: absensi(),
+        href: '/dashboard/absensi',
         icon: IdCard,
     },
     {

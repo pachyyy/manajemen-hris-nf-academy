@@ -1,6 +1,13 @@
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { Button } from '@/components/ui/button';
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
     Table,
     TableBody,
     TableCaption,
@@ -12,7 +19,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Ellipsis } from 'lucide-react';
+import { Ellipsis, MoreHorizontalIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Helper function to capitalize the first letter of a string
@@ -25,7 +32,11 @@ const capitalizeFirstLetter = (str: string) => {
 const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    };
     return date.toLocaleDateString('en-GB', options); // 'en-GB' for day-month-year order
 };
 
@@ -162,7 +173,7 @@ export default function ShwoEmployees() {
                         <TableHead>Position</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Join Date</TableHead>
-                        <TableHead className="">Action</TableHead>
+                        <TableHead>Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -173,45 +184,56 @@ export default function ShwoEmployees() {
                             <TableCell>{post.email}</TableCell>
                             <TableCell>{post.phone}</TableCell>
                             <TableCell>{formatDate(post.birth_date)}</TableCell>
-                            <TableCell>{capitalizeFirstLetter(post.division)}</TableCell>
-                            <TableCell>{capitalizeFirstLetter(post.position)}</TableCell>
-                            <TableCell>{capitalizeFirstLetter(post.status)}</TableCell>
+                            <TableCell>
+                                {capitalizeFirstLetter(post.division)}
+                            </TableCell>
+                            <TableCell>
+                                {capitalizeFirstLetter(post.position)}
+                            </TableCell>
+                            <TableCell>
+                                {capitalizeFirstLetter(post.status)}
+                            </TableCell>
                             <TableCell>{formatDate(post.join_date)}</TableCell>
-                            <TableCell className="overflow-visible">
-                                <div className="relative">
-                                    <Button
-                                        className="cursor-pointer bg-neutral-900 hover:bg-neutral-700"
-                                        onClick={() => toggleDropdown(post.id)}
+                            <TableCell>
+                                <DropdownMenu modal={false}>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button aria-label="Open menu">
+                                            <MoreHorizontalIcon />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        className="w-40"
+                                        align="end"
                                     >
-                                        <Ellipsis className="text-white hover:text-gray-500" />
-                                    </Button>
-                                    {openDropdownId === post.id && (
-                                        <div className="fixed right-4 z-100 mt-1 w-32 rounded-md bg-neutral-900 shadow-lg">
-                                            <Link href={`/dashboard/employees/update/${post.id}`}>
-                                                <Button className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800">
-                                                    Update
-                                                </Button>
-                                            </Link>
-                                            <Button
-                                                onClick={() =>
-                                                    handleDeleteClick(post.id)
-                                                }
-                                                className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800"
+                                        <DropdownMenuGroup>
+                                            <Link
+                                                href={`/dashboard/employees/update/${post.id}`}
                                             >
-                                                Delete
-                                            </Button>
-                                            <Button className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800">
-                                                See documents
-                                            </Button>
-                                            <Link href={`/dashboard/employees/account/${post.id}`}>
-                                                <Button className="block w-full cursor-pointer bg-neutral-900 px-4 py-2 text-left text-sm text-white hover:bg-neutral-800">
-                                                    {/* Untuk lihat dan buat akun untuk pengguna / karyawan nantinya */}
-                                                    Check account
-                                                </Button>
+                                                <DropdownMenuItem>
+                                                    Update
+                                                </DropdownMenuItem>
                                             </Link>
-                                        </div>
-                                    )}
-                                </div>
+                                            <DropdownMenuItem onSelect={() => {
+                                                handleDeleteClick(post.id)
+                                            }}>
+                                                Delete
+                                            </DropdownMenuItem>
+                                            {/* Untuk lihat dan buat akun untuk pengguna / karyawan nantinya */}
+                                             <Link
+                                                href={`/dashboard/employees/account/${post.id}`}
+                                            >
+                                                <DropdownMenuItem>
+                                                    Check Account
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link>
+                                                <DropdownMenuItem>
+                                                    Check Documents
+                                                </DropdownMenuItem>
+                                            </Link>
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </TableCell>
                         </TableRow>
                     ))}

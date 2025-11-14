@@ -44,9 +44,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dataPegawai');
     })->name('dataPegawai');
 
-    Route::get('absensi', function () {
-        return Inertia::render('absensi');
-    })->name('absensi');
+    Route::get('dashboard/absensi', function () {
+        return Inertia::render('absensi/showAbsensi');
+    })->name('dashborad.absensi');
 
     Route::get('penugasan', function () {
         return Inertia::render('penugasan');
