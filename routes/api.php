@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -9,5 +10,10 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('employees', EmployeeController::class);
+    Route::apiResource('employees', EmployeeController::class)->middleware('admin');
+    Route::post('employees/{id}/create-account', [EmployeeController::class, 'createAccount'])->middleware('admin');
+    Route::post('employees/account/{id}/reset-password', [EmployeeController::class, 'resetPassword'])->middleware('admin');
+    Route::delete('employees/account/{id}', [EmployeeController::class, 'deleteAccount'])->middleware('admin');
+    Route::put('employees/account/{id}/role', [EmployeeController::class, 'updateRole'])->middleware('admin');
+    Route::apiResource('roles', RoleController::class)->middleware('admin');
 });

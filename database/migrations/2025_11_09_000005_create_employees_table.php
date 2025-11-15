@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email');
+            $table->string('phone');
+            $table->date('birth_date');
             $table->string('division');
             $table->string('position');
             $table->date('join_date');
-            $table->string('contact');
             $table->enum('status', ['aktif', 'cuti', 'resign'])->default('aktif');
             $table->text('document_path')->nullable();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -31,4 +34,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('employees');
     }
+
 };

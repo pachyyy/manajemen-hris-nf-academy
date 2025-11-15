@@ -22,12 +22,18 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface Role {
+    id: number;
+    name: string;
+    [key: string]: unknown;
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
-    [key: string]: unknown;
+    [key:string]: unknown;
 }
 
 export interface User {
@@ -39,5 +45,22 @@ export interface User {
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;
+    employee?: Employee;
+    role_id?: number;
     [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface Employee {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    birth_date: string;
+    division: string;
+    position: string;
+    status: string;
+    join_date: string;
+    document_path: string | null;
+    user?: User | null;
 }
