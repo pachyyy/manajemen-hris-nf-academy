@@ -19,7 +19,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Ellipsis, MoreHorizontalIcon } from 'lucide-react';
+import { MoreHorizontalIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Helper function to capitalize the first letter of a string
@@ -54,14 +54,26 @@ const formatDate = (dateString: string) => {
 //     role: number;
 // }
 
+interface Employee {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    birth_date: string;
+    division: string;
+    position: string;
+    status: string;
+    join_date: string;
+}
+
 export default function ShwoEmployees() {
     const [error, setError] = useState<string | null>(null); // Add error state
-    const [posts, setPosts] = useState([]); // For storing data
+    const [posts, setPosts] = useState<Employee[]>([]); // For storing data
     const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(
         null,
     );
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
     const fetchData = async () => {
         try {
@@ -90,12 +102,11 @@ export default function ShwoEmployees() {
 
     useEffect(() => {
         fetchData();
-    });
+    }, []);
 
     const handleDeleteClick = (id: number) => {
         setEmployeeToDelete(id);
         setIsDeleteModalOpen(true);
-        setOpenDropdownId(null);
     };
 
     const confirmDelete = async () => {
@@ -128,9 +139,6 @@ export default function ShwoEmployees() {
         }
     };
 
-    const toggleDropdown = (id: number) => {
-        setOpenDropdownId(openDropdownId === id ? null : id);
-    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -177,7 +185,7 @@ export default function ShwoEmployees() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {posts.map((post: any) => (
+                    {posts.map((post) => (
                         <TableRow key={post.id}>
                             <TableCell>{post.first_name}</TableCell>
                             <TableCell>{post.last_name}</TableCell>
@@ -226,9 +234,9 @@ export default function ShwoEmployees() {
                                                     Check Account
                                                 </DropdownMenuItem>
                                             </Link>
-                                            <Link>
+                                            <Link href={`/dashboard/employees/${post.id}/documents`}>
                                                 <DropdownMenuItem>
-                                                    Check Documents
+                                                    See Documents
                                                 </DropdownMenuItem>
                                             </Link>
                                         </DropdownMenuGroup>

@@ -40,6 +40,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard/employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('admin')->name('dashboard.employees.account');
 
+    Route::get('dashboard/employees/{id}/documents', function($id) {
+        return Inertia::render('employees/EmployeeDocuments', [
+            'employeeId' => $id
+        ]);
+    })->middleware('admin')->name('dashboard.employees.documents');
+
     Route::get('dataPegawai', function () {
         return Inertia::render('dataPegawai');
     })->name('dataPegawai');

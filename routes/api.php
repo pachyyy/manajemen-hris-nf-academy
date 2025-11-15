@@ -15,5 +15,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('employees/account/{id}/reset-password', [EmployeeController::class, 'resetPassword'])->middleware('admin');
     Route::delete('employees/account/{id}', [EmployeeController::class, 'deleteAccount'])->middleware('admin');
     Route::put('employees/account/{id}/role', [EmployeeController::class, 'updateRole'])->middleware('admin');
+    Route::post('employees/{id}/documents', [EmployeeController::class, 'uploadDocument'])->middleware('admin');
+    Route::get('employees/{id}/documents', [EmployeeController::class, 'getDocuments'])->middleware('admin');
+    Route::delete('documents/{id}', [EmployeeController::class, 'deleteDocument'])->middleware('admin');
     Route::apiResource('roles', RoleController::class)->middleware('admin');
 });
