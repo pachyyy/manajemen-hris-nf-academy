@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -50,9 +52,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dataPegawai');
     })->name('dataPegawai');
 
-    Route::get('dashboard/absensi', function () {
-        return Inertia::render('absensi/showAbsensi');
-    })->name('dashborad.absensi');
+    Route::get('dashboard/attendance', function () {
+
+        $user = Auth::user();
+
+        $employee = Employee::where('user_id', $user->id)->first();
+
+        if (!$employee) {
+            abort(404, "Employee data not found for this user.");
+        }
+
+        return Inertia::render('attendance/staffAttendance', [
+            'records' => $employee->attendances()->orderBy('date','desc')->get(),
+            'user' => $user,
+        ]);
+    })->name('dashboard.attendance');
+
+    Route::get('dashboard/attendance/admin', function () {
+        return Inertia::render('attendance/adminAttendance.tsx');
+    })->middleware('admin')->name('attendance.admin');
 
     Route::get('penugasan', function () {
         return Inertia::render('penugasan');

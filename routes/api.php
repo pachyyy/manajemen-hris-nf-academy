@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
@@ -10,6 +11,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    // HR atau Admin
     Route::apiResource('employees', EmployeeController::class)->middleware('admin');
     Route::post('employees/{id}/create-account', [EmployeeController::class, 'createAccount'])->middleware('admin');
     Route::post('employees/account/{id}/reset-password', [EmployeeController::class, 'resetPassword'])->middleware('admin');
@@ -19,4 +22,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('employees/{id}/documents', [EmployeeController::class, 'getDocuments'])->middleware('admin');
     Route::delete('documents/{id}', [EmployeeController::class, 'deleteDocument'])->middleware('admin');
     Route::apiResource('roles', RoleController::class)->middleware('admin');
+    Route::delete('attendance/{id}', [AttendanceController::class, 'destroy'])->middleware('admin');
+
+    // View attendance
+    Route::get('attendance', [AttendanceController::class, 'index']);
+
+    // Staff actions
+    Route::post('attendance/check-in', [AttendanceController::class, 'CheckIn']);
+    Route::post('attendance/check-out', [AttendanceController::class, 'CheckOut']);
+    Route::post('attendance/request-leave', [AttendanceController::class, 'requestLeave']);
+
 });
