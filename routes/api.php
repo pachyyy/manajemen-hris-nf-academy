@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('documents/{id}', [EmployeeController::class, 'deleteDocument'])->middleware('admin');
     Route::apiResource('roles', RoleController::class)->middleware('admin');
     Route::delete('attendance/{id}', [AttendanceController::class, 'destroy'])->middleware('admin');
+    Route::get('attendance/summary', [AttendanceController::class, 'summary'])->middleware('admin');
+    Route::get('attendance/filter', [AttendanceController::class, 'filter'])->middleware('admin');
 
     // View attendance
     Route::get('attendance', [AttendanceController::class, 'index']);

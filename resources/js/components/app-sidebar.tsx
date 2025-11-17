@@ -36,6 +36,11 @@ const adminNavItems: NavItem[] = [
         icon: IdCard,
     },
     {
+        title: 'Rekap absensi',
+        href: '/dashboard/attendance/summary',
+        icon: IdCard,
+    },
+    {
         title: 'Penugasan',
         href: penugasan(),
         icon: ClipboardList,
@@ -72,6 +77,11 @@ const hrNavItems: NavItem[] = [
     {
         title: 'Absensi',
         href: '/dashboard/attendance/admin',
+        icon: IdCard,
+    },
+    {
+        title: 'Rekap absensi',
+        href: '/dashboard/attendance/summary',
         icon: IdCard,
     },
     {

@@ -7,6 +7,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class AttendanceController extends Controller
 {
@@ -79,7 +80,7 @@ class AttendanceController extends Controller
         ->where('date', date('Y-m-d'))
         ->first();
 
-        if ($attendance) {
+        if (!$attendance) {
             return response()->json([
                 'message' => 'Anda belum check-in hari ini.'
             ], 400);
@@ -156,5 +157,90 @@ class AttendanceController extends Controller
         return response()->json([
             'message' => 'Absensi berhasil dihapus'
         ]);
+    }
+
+    /**
+     * Rekap otomatis ke dashboard Admin
+     */
+    public function summary() {
+        $today = date('Y-m-d');
+
+        // Rekap status hari ini
+        $summary = Attendance::where('date', $today)
+            ->selectRaw("
+                SUM(status = 'hadir') as hadir,
+                SUM(status = 'izin') as izin,
+                SUM(status = 'sakit') as sakit,
+                SUM(status = 'cuti') as cuti,
+                SUM(status = 'alpha') as alpha
+            ")
+            ->first();
+
+            // Total pegawai
+            $totalEmployees = Employee::count();
+
+            // Yang absen hari ini
+            $absenToday = Attendance::where('date', $today)->count();
+
+            // Belum absen
+            $notYet = $totalEmployees - $absenToday;
+
+            return response()->json([
+                'today' => $today,
+                'summary' => $summary,
+                'totalEmployees' => $totalEmployees,
+                'alreadyAbsented' => $absenToday,
+                'notYetAbsented' => $notYet,
+            ]);
+    }
+
+    // Inertia Page
+    public function summaryPage() {
+        $today = date('Y-m-d');
+
+        $totalEmployees = Employee::count();
+        $alreadyAbsented = Attendance::where('date', $today)->count();
+        $notYetAbsented = $totalEmployees - $alreadyAbsented;
+
+        $summary = [
+            'hadir' => Attendance::where('date', $today)->where('status', 'hadir')->count(),
+            'izin' => Attendance::where('date', $today)->where('status', 'izin')->count(),
+            'sakit' => Attendance::where('date', $today)->where('status', 'sakit')->count(),
+            'cuti' => Attendance::where('date', $today)->where('status', 'cuti')->count(),
+            'alpha' => Attendance::where('date', $today)->where('status', 'alpha')->count(),
+        ];
+
+        return Inertia::render('attendance/adminAttendanceSummary', [
+            'today' => $today,
+            'summary' => $summary,
+            'totalEmployees' => $totalEmployees,
+            'alreadyAbsented' => $alreadyAbsented,
+            'notYetAbsented' => $notYetAbsented,
+        ]);
+    }
+
+    // Filter berdasarkan tanggal dan divisi untuk laporan absensi admin
+    public function filter(Request $request) {
+
+        $request->validate([
+            'date' => 'nullable|date',
+            'division' => 'nullable|string'
+        ]);
+
+        $query = Attendance::with('employee');
+
+        // Filter tanggal
+        if ($request->date) {
+            $query->where('date', $request->date);
+        }
+
+        // Filter divisi
+        if ($request->division) {
+            $query->whereHas('employee', function ($q) use ($request) {
+                $q->where('division', $request->division);
+            });
+        }
+
+        return response()->json($query->orderBy('date', 'desc')->get());
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
@@ -56,11 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         $user = Auth::user();
 
-        $employee = Employee::where('user_id', $user->id)->first();
-
-        if (!$employee) {
-            abort(404, "Employee data not found for this user.");
-        }
+        $employee = Employee::where('user_id', $user->id)->firstOrFail();
 
         return Inertia::render('attendance/staffAttendance', [
             'records' => $employee->attendances()->orderBy('date','desc')->get(),
@@ -69,8 +66,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard.attendance');
 
     Route::get('dashboard/attendance/admin', function () {
-        return Inertia::render('attendance/adminAttendance.tsx');
+        return Inertia::render('attendance/adminAttendance');
     })->middleware('admin')->name('attendance.admin');
+
+    Route::get('dashboard/attendance/summary',
+        [AttendanceController::class, 'summaryPage']
+        )->middleware('admin')
+        ->name('dashboard.attendance.summary');
 
     Route::get('penugasan', function () {
         return Inertia::render('penugasan');
