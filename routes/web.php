@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
+use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -40,13 +43,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard/employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('admin')->name('dashboard.employees.account');
 
+    Route::get('dashboard/employees/{id}/documents', function($id) {
+        return Inertia::render('employees/EmployeeDocuments', [
+            'employeeId' => $id
+        ]);
+    })->middleware('admin')->name('dashboard.employees.documents');
+
     Route::get('dataPegawai', function () {
         return Inertia::render('dataPegawai');
     })->name('dataPegawai');
 
-    Route::get('dashboard/absensi', function () {
-        return Inertia::render('absensi/showAbsensi');
-    })->name('dashborad.absensi');
+    Route::get('dashboard/attendance', function () {
+
+        $user = Auth::user();
+
+        $employee = Employee::where('user_id', $user->id)->firstOrFail();
+
+        return Inertia::render('attendance/staffAttendance', [
+            'records' => $employee->attendances()->orderBy('date','desc')->get(),
+            'user' => $user,
+        ]);
+    })->name('dashboard.attendance');
+
+    Route::get('dashboard/attendance/admin', function () {
+        return Inertia::render('attendance/adminAttendance');
+    })->middleware('admin')->name('attendance.admin');
+
+    Route::get('dashboard/attendance/summary',
+        [AttendanceController::class, 'summaryPage']
+        )->middleware('admin')
+        ->name('dashboard.attendance.summary');
 
     Route::get('penugasan', function () {
         return Inertia::render('penugasan');

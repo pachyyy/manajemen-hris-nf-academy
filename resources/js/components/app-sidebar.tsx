@@ -32,7 +32,12 @@ const adminNavItems: NavItem[] = [
     },
     {
         title: 'Absensi',
-        href: '/dashboard/absensi',
+        href: '/dashboard/attendance/admin',
+        icon: IdCard,
+    },
+    {
+        title: 'Rekap absensi',
+        href: '/dashboard/attendance/summary',
         icon: IdCard,
     },
     {
@@ -71,7 +76,12 @@ const hrNavItems: NavItem[] = [
     },
     {
         title: 'Absensi',
-        href: '/dashboard/absensi',
+        href: '/dashboard/attendance/admin',
+        icon: IdCard,
+    },
+    {
+        title: 'Rekap absensi',
+        href: '/dashboard/attendance/summary',
         icon: IdCard,
     },
     {
@@ -95,7 +105,7 @@ const hrNavItems: NavItem[] = [
 const employeeNavItems: NavItem[] = [
     {
         title: 'Absensi',
-        href: '/dashboard/absensi',
+        href: '/dashboard/attendance',
         icon: IdCard,
     },
     {

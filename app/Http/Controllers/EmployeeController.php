@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Role;
+use App\Models\EmployeeDocument;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -36,6 +38,10 @@ class EmployeeController extends Controller
             'join_date' => 'required|date',
             'status' => 'required|in:aktif,cuti,resign',
         ]);
+
+        if ($request->hasFile('document')) {
+            $validated['document_path'] = $request->file('document')->store('documents', 'public');
+        }
 
         $employee = Employee::create($validated);
         return response()->json($employee, 201);
@@ -65,6 +71,10 @@ class EmployeeController extends Controller
             'join_date' => 'date',
             'status' => 'in:aktif,cuti,resign',
         ]);
+
+        if ($request->hasFile('document')) {
+            $validated['document_path'] = $request->file('document')->store('document', 'public');
+        }
 
         $employee->update($validated);
         return response()->json($employee);
@@ -155,5 +165,36 @@ class EmployeeController extends Controller
         $user->save();
 
         return response()->json($user);
+    }
+
+    public function uploadDocument(Request $request, $id)
+    {
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'name' => 'required|string',
+        ]);
+
+        $path = $request->file('document')->store('employee-documents', 'public');
+
+        EmployeeDocument::create([
+            'employee_id' => $id,
+            'name' => $request->name,
+            'file_path' => $path,
+        ]);
+
+        return response()->json(['message' => 'Document uploaded successfully',]);
+    }
+
+    public function getDocuments($id) {
+        return EmployeeDocument::where('employee_id', $id)->get();
+    }
+
+    public function deleteDocument($id) {
+        $doc = EmployeeDocument::findOrFail($id);
+
+        Storage::disk('public')->delete($doc->file_path);
+
+        $doc->delete();
+        return response()->json(['message' => 'Document deleted']);
     }
 }

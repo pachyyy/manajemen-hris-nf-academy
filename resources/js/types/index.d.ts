@@ -64,3 +64,22 @@ export interface Employee {
     document_path: string | null;
     user?: User | null;
 }
+
+export type PageProps<T = Record<string, unknown>> = T & {
+    auth: {
+        user: User;
+    };
+};
+
+declare module '@inertiajs/core' {
+    interface PageProps {
+        auth: {
+            user: {
+                id: number;
+                name: string;
+                email: string;
+                role?: Role | null;
+            };
+        };
+    }
+}

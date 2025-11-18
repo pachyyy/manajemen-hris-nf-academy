@@ -1,6 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Employee, User, Role } from '@/types';
 import { usePage, router } from '@inertiajs/react';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -12,7 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 
-interface PageProps {
+interface PageProps extends InertiaPageProps {
     employee: Employee & { user: User | null };
     roles: Role[];
 }
@@ -68,8 +69,12 @@ export default function EmployeeAccount() {
             sessionStorage.setItem('generatedPassword', data.password);
             setDisplayPassword(data.password);
             router.reload({ only: ['employee'] });
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred.");
+            }
         }
     };
 
@@ -98,8 +103,12 @@ export default function EmployeeAccount() {
                 throw new Error('Failed to delete account');
             }
             router.reload({ only: ['employee'] });
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred.");
+            }
         }
     };
 
@@ -131,8 +140,12 @@ export default function EmployeeAccount() {
             const data = await response.json();
             setDisplayPassword(data.password);
             setShowPassword(true);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred.");
+            }
         }
     };
 
@@ -164,8 +177,12 @@ export default function EmployeeAccount() {
 
             router.reload({ only: ['employee'] });
             alert('Role updated successfully!');
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred.");
+            }
         }
     };
 
