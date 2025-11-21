@@ -36,12 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('attendance/check-out', [AttendanceController::class, 'CheckOut']);
     Route::post('attendance/request-leave', [AttendanceController::class, 'requestLeave']);
 
-    Route::get('/staff/attendance', function (Request $request) {
-        $user = $request->user();
-        $employee = \App\Models\Employee::where('user_id', $user->id)->firstOrFail();
-        return response()->json(
-            ['records' => $employee->attendances()->orderBy('date', 'desc')->get(),
-            'user' => $user,
-        ]);
-    })->name('staff.attendance');
+    // Task Management API
+    Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
+
 });
