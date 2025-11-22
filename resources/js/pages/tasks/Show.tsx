@@ -26,6 +26,7 @@ interface Task {
     id: number;
     title: string;
     description: string;
+    division?: string;
     assigned_to: number;
     assigned_by: number;
     priority: 'low' | 'medium' | 'high';
@@ -150,6 +151,15 @@ export default function ShowTask({ task, canManage }: ShowTaskProps) {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
+                                <Label className="text-muted-foreground">
+                                    Division
+                                </Label>
+                                <p className="mt-1 font-medium capitalize">
+                                    {task.division || 'N/A'}
+                                </p>
+                            </div>
+
+                            <div>
                                 <Label className="flex items-center gap-2 text-muted-foreground">
                                     <UserIcon className="h-4 w-4" />
                                     Assigned To
@@ -161,19 +171,19 @@ export default function ShowTask({ task, canManage }: ShowTaskProps) {
                                     {task.assigned_to_user?.email}
                                 </p>
                             </div>
+                        </div>
 
-                            <div>
-                                <Label className="flex items-center gap-2 text-muted-foreground">
-                                    <UserIcon className="h-4 w-4" />
-                                    Assigned By
-                                </Label>
-                                <p className="mt-1 font-medium">
-                                    {task.assigned_by_user?.name || 'N/A'}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    {task.assigned_by_user?.email}
-                                </p>
-                            </div>
+                        <div>
+                            <Label className="flex items-center gap-2 text-muted-foreground">
+                                <UserIcon className="h-4 w-4" />
+                                Assigned By
+                            </Label>
+                            <p className="mt-1 font-medium">
+                                {task.assigned_by_user?.name || 'N/A'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                {task.assigned_by_user?.email}
+                            </p>
                         </div>
 
                         <div>

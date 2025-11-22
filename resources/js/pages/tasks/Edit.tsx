@@ -13,19 +13,26 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useMemo } from 'react';
 
 interface User {
     id: number;
     name: string;
     email: string;
+    division?: string;
     position?: string;
+}
+
+interface Division {
+    value: string;
+    label: string;
 }
 
 interface Task {
     id: number;
     title: string;
     description: string;
+    division?: string;
     assigned_to: number;
     priority: string;
     deadline: string;
@@ -36,6 +43,7 @@ interface Task {
 interface EditTaskProps {
     task: Task;
     staffUsers: User[];
+    divisions: Division[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -49,20 +57,44 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function EditTask({ task, staffUsers }: EditTaskProps) {
-    const { data, setData, put, processing, errors } = useForm({
+export default function EditTask({
+    task,
+    staffUsers,
+    divisions,
+}: EditTaskProps) {
+    const { data, setData, post, processing, errors } = useForm({
         title: task.title,
         description: task.description,
+        division: task.division || '',
         assigned_to: task.assigned_to.toString(),
         priority: task.priority,
         deadline: task.deadline,
         status: task.status,
         attachment: null as File | null,
+        _method: 'PUT',
     });
+
+    // Filter employees by selected division
+    const filteredEmployees = useMemo(() => {
+        if (!data.division) return staffUsers;
+        return staffUsers.filter((user) => user.division === data.division);
+    }, [data.division, staffUsers]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(`/tasks/${task.id}`);
+
+        // Debug: log what we're sending
+        console.log('Submitting data:', data);
+        console.log('Errors before submit:', errors);
+
+        // Use POST with _method spoofing for file uploads
+        post(`/tasks/${task.id}`, {
+            forceFormData: true,
+            preserveScroll: true,
+            onError: (errors) => {
+                console.log('Validation errors:', errors);
+            },
+        });
     };
 
     return (
@@ -116,6 +148,37 @@ export default function EditTask({ task, staffUsers }: EditTaskProps) {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="division">Division</Label>
+                                <Select
+                                    value={data.division}
+                                    onValueChange={(value) => {
+                                        setData('division', value);
+                                        // Reset assigned_to when division changes
+                                        setData('assigned_to', '');
+                                    }}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select division" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {divisions.map((div) => (
+                                            <SelectItem
+                                                key={div.value}
+                                                value={div.value}
+                                            >
+                                                {div.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.division && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.division}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="assigned_to">
                                     Assign To{' '}
                                     <span className="text-destructive">*</span>
@@ -127,11 +190,12 @@ export default function EditTask({ task, staffUsers }: EditTaskProps) {
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select user" />
+                                        <SelectValue placeholder="Select employee" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {staffUsers && staffUsers.length > 0 ? (
-                                            staffUsers.map((user) => (
+                                        {filteredEmployees &&
+                                        filteredEmployees.length > 0 ? (
+                                            filteredEmployees.map((user) => (
                                                 <SelectItem
                                                     key={user.id}
                                                     value={user.id.toString()}
@@ -147,7 +211,9 @@ export default function EditTask({ task, staffUsers }: EditTaskProps) {
                                             ))
                                         ) : (
                                             <div className="p-2 text-sm text-muted-foreground">
-                                                No employees available
+                                                {data.division
+                                                    ? 'No employees in this division'
+                                                    : 'Select a division first'}
                                             </div>
                                         )}
                                     </SelectContent>
@@ -174,7 +240,7 @@ export default function EditTask({ task, staffUsers }: EditTaskProps) {
                                         }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue />
+                                            <SelectValue placeholder="Select priority" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="low">
@@ -230,7 +296,7 @@ export default function EditTask({ task, staffUsers }: EditTaskProps) {
                                     }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue />
+                                        <SelectValue placeholder="Select status" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="belum">
