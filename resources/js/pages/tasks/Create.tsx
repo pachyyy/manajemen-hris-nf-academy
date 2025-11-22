@@ -13,17 +13,24 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useMemo } from 'react';
 
 interface User {
     id: number;
     name: string;
     email: string;
+    division?: string;
     position?: string;
+}
+
+interface Division {
+    value: string;
+    label: string;
 }
 
 interface CreateTaskProps {
     staffUsers: User[];
+    divisions: Division[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -37,23 +44,29 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function CreateTask({ staffUsers }: CreateTaskProps) {
+export default function CreateTask({ staffUsers, divisions }: CreateTaskProps) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',
+        division: '',
         assigned_to: '',
         priority: 'medium',
         deadline: '',
         attachment: null as File | null,
     });
 
+    // Filter employees by selected division
+    const filteredEmployees = useMemo(() => {
+        if (!data.division) return staffUsers;
+        return staffUsers.filter((user) => user.division === data.division);
+    }, [data.division, staffUsers]);
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post('/tasks');
+        post('/tasks', {
+            forceFormData: true,
+        });
     };
-
-    // Debug: Check if staffUsers is received
-    console.log('Staff Users:', staffUsers);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -106,6 +119,40 @@ export default function CreateTask({ staffUsers }: CreateTaskProps) {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="division">
+                                    Division{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
+                                <Select
+                                    value={data.division}
+                                    onValueChange={(value) => {
+                                        setData('division', value);
+                                        // Reset assigned_to when division changes
+                                        setData('assigned_to', '');
+                                    }}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select division" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {divisions.map((div) => (
+                                            <SelectItem
+                                                key={div.value}
+                                                value={div.value}
+                                            >
+                                                {div.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.division && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.division}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="assigned_to">
                                     Assign To{' '}
                                     <span className="text-destructive">*</span>
@@ -115,13 +162,21 @@ export default function CreateTask({ staffUsers }: CreateTaskProps) {
                                     onValueChange={(value) =>
                                         setData('assigned_to', value)
                                     }
+                                    disabled={!data.division}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select user" />
+                                        <SelectValue
+                                            placeholder={
+                                                data.division
+                                                    ? 'Select employee'
+                                                    : 'Select division first'
+                                            }
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {staffUsers && staffUsers.length > 0 ? (
-                                            staffUsers.map((user) => (
+                                        {filteredEmployees &&
+                                        filteredEmployees.length > 0 ? (
+                                            filteredEmployees.map((user) => (
                                                 <SelectItem
                                                     key={user.id}
                                                     value={user.id.toString()}
@@ -137,7 +192,9 @@ export default function CreateTask({ staffUsers }: CreateTaskProps) {
                                             ))
                                         ) : (
                                             <div className="p-2 text-sm text-muted-foreground">
-                                                No employees available
+                                                {data.division
+                                                    ? 'No employees in this division'
+                                                    : 'Select a division first'}
                                             </div>
                                         )}
                                     </SelectContent>
