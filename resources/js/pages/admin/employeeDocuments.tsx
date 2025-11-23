@@ -10,7 +10,7 @@ interface Doc {
     file_path: string;
 }
 
-interface Employee {
+interface BankDetails {
     bank_name?: string;
     bank_account_number?: string;
 }
@@ -21,10 +21,10 @@ interface EmployeeDocumentsProps {
 
 export default function EmployeeDocuments({ employeeId }: EmployeeDocumentsProps) {
     const [documents, setDocuments] = useState<Doc[]>([]);
-    const [employee, setEmployee] = useState<Employee | null>(null);
+    // const [employee, setEmployee] = useState<Employee | null>(null);
     const [name, setName] = useState("");
     const [file, setFile] = useState<File | null>(null);
-    const [bankDetails, setBankDetails] = useState({
+    const [bankDetails, setBankDetails] = useState<BankDetails>({
         bank_name: "",
         bank_account_number: "",
     });
@@ -46,7 +46,7 @@ export default function EmployeeDocuments({ employeeId }: EmployeeDocumentsProps
             },
         });
         const data = await res.json();
-        setEmployee(data);
+        // setEmployee(data);
         setBankDetails({
             bank_name: data.bank_name || "",
             bank_account_number: data.bank_account_number || "",

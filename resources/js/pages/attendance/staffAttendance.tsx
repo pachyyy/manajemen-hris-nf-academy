@@ -66,11 +66,29 @@ export default function StaffAttendance({
     );
 
     const handleCheckIn = async () => {
-        await router.post('/api/attendance/check-in');
+        await fetch('/api/attendance/check-in', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN':
+                    (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
+                        ?.content ?? '',
+                    Accept: 'application/json',
+            },
+        })
+        .then(() => window.location.reload());
     };
 
     const handleCheckOut = async () => {
-        await router.post('/api/attendance/check-out');
+        await fetch('/api/attendance/check-out', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN':
+                    (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
+                        ?.content ?? '',
+                Accept: 'application/json',
+            },
+        })
+        .then(() => window.location.reload());
     };
 
     // State untuk izin atau sakit
