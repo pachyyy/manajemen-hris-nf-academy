@@ -34,4 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('attendance/check-out', [AttendanceController::class, 'CheckOut']);
     Route::post('attendance/request-leave', [AttendanceController::class, 'requestLeave']);
 
+    // Task Management API
+    Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
+
 });

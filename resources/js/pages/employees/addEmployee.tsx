@@ -38,9 +38,7 @@ export default function AddEmployee() {
         undefined,
     );
     const [openBirthDate, setOpenBirthDate] = React.useState(false);
-    const [joinDate, setJoinDate] = React.useState<Date | undefined>(
-        undefined,
-    );
+    const [joinDate, setJoinDate] = React.useState<Date | undefined>(undefined);
     const [openJoinDate, setOpenJoinDate] = React.useState(false);
 
     const handleChange = (
@@ -60,20 +58,24 @@ export default function AddEmployee() {
         setError(null);
 
         try {
+            const csrfToken = document.querySelector<HTMLMetaElement>(
+                'meta[name="csrf-token"]',
+            )?.content;
+
+            if (!csrfToken) {
+                throw new Error('CSRF token not found');
+            }
+
             const response = await fetch('/api/employees', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    'X-CSRF-TOKEN':
-                        (
-                            document.querySelector(
-                                'meta[name="csrf-token"]',
-                            ) as HTMLMetaElement
-                        )?.content || '',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: JSON.stringify(formData),
-                credentials: 'include',
+                credentials: 'same-origin',
             });
 
             if (!response.ok) {
@@ -106,7 +108,7 @@ export default function AddEmployee() {
                     Add New Employee
                 </h3>
                 <div className="mt-2">
-                    <form onSubmit={handleSubmit} className="space-y-4 w-2xl">
+                    <form onSubmit={handleSubmit} className="w-2xl space-y-4">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div className={divClassname}>
                                 <Label
@@ -239,16 +241,14 @@ export default function AddEmployee() {
                                     }
                                     required
                                 >
-                                <SelectTrigger
+                                    <SelectTrigger
                                         id="division"
                                         value={formData.division}
                                     >
                                         <SelectValue placeholder="Select Division" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="-">
-                                            -
-                                        </SelectItem>
+                                        <SelectItem value="-">-</SelectItem>
                                         <SelectItem value="admin">
                                             Admin
                                         </SelectItem>
@@ -407,11 +407,7 @@ export default function AddEmployee() {
                             >
                                 Cancel
                             </Button>
-                            <Button
-                                type="submit"
-                            >
-                                Add Employee
-                            </Button>
+                            <Button type="submit">Add Employee</Button>
                         </div>
                     </form>
                 </div>
