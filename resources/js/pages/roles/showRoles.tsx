@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/table";
 import AddRoleModal from '@/components/addRoleModal';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
-import { Ellipsis } from 'lucide-react';
+import { Ellipsis, Trash2 } from 'lucide-react';
+import { Head } from '@inertiajs/react';
 
 interface Role {
     id: number;
@@ -98,6 +99,7 @@ export default function ShowRoles() {
     ];
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title='Role List' />
             <div className="flex justify-center align-center p-3">
                 <h1 className="text-3xl font-bold">Role List</h1>
                 <div className="absolute z-10 right-2 ">
@@ -153,7 +155,7 @@ export default function ShowRoles() {
                                                 }
                                                 className="block w-full text-left px-4 py-2 text-sm bg-neutral-900 text-white hover:bg-neutral-800 cursor-pointer"
                                             >
-                                                Delete
+                                                 Delete
                                             </Button>
                                         </div>
                                     )}

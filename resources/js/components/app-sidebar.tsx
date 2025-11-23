@@ -10,10 +10,25 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
+import {
+    dashboard,
+    evaluasiKerja,
+    laporan,
+    pelatihan,
+    penugasan,
+} from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, ClipboardList, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
+import {
+    BookOpen,
+    ClipboardList,
+    File,
+    IdCard,
+    Mail,
+    ScrollText,
+    UserCog,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 // --- Navigation Items for Each Role ---
@@ -31,13 +46,13 @@ const adminNavItems: NavItem[] = [
         icon: UserCog,
     },
     {
-        title: 'Absensi',
-        href: '/dashboard/attendance/admin',
+        title: 'Attendance Summary',
+        href: '/dashboard/attendance/summary',
         icon: IdCard,
     },
     {
-        title: 'Rekap absensi',
-        href: '/dashboard/attendance/summary',
+        title: 'Attendance',
+        href: '/dashboard/attendance/admin',
         icon: IdCard,
     },
     {
@@ -64,24 +79,24 @@ const adminNavItems: NavItem[] = [
         title: 'Messages',
         href: '/dashboard/messages',
         icon: Mail,
-    }
+    },
 ];
 
 // For a potential 'HR' role (template)
 const hrNavItems: NavItem[] = [
     {
-        title: 'Data Pegawai',
-        href: dataPegawai(),
+        title: 'Employee Management',
+        href: '/dashboard/employees',
         icon: Users,
     },
     {
-        title: 'Absensi',
-        href: '/dashboard/attendance/admin',
+        title: 'Attendance Summary',
+        href: '/dashboard/attendance/summary',
         icon: IdCard,
     },
     {
-        title: 'Rekap absensi',
-        href: '/dashboard/attendance/summary',
+        title: 'Attendance',
+        href: '/dashboard/attendance/admin',
         icon: IdCard,
     },
     {
@@ -98,13 +113,13 @@ const hrNavItems: NavItem[] = [
         title: 'Messages',
         href: '/dashboard/messages',
         icon: Mail,
-    }
+    },
 ];
 
 // For a general 'Employee' role (template)
 const employeeNavItems: NavItem[] = [
     {
-        title: 'Absensi',
+        title: 'Attendance',
         href: '/dashboard/attendance',
         icon: IdCard,
     },
@@ -122,7 +137,12 @@ const employeeNavItems: NavItem[] = [
         title: 'Messages',
         href: '/dashboard/messages',
         icon: Mail,
-    }
+    },
+    {
+        title: 'Upload Documents',
+        href: '/dashboard/documents',
+        icon: File,
+    },
 ];
 
 // Function to get the appropriate navigation items based on user role
@@ -130,7 +150,7 @@ const getNavItems = (roleName?: string): NavItem[] => {
     switch (roleName) {
         case 'Admin':
             return adminNavItems;
-        case 'HR': // Example for a future HR ro    le
+        case 'Human Resource': // Example for a future HR ro    le
             return hrNavItems;
         default:
             return employeeNavItems; // Default for employees and other roles

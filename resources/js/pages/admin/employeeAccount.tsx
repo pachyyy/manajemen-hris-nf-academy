@@ -1,8 +1,3 @@
-import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Employee, User, Role } from '@/types';
-import { usePage, router } from '@inertiajs/react';
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -12,6 +7,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem, Employee, Role, User } from '@/types';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 
 interface PageProps extends InertiaPageProps {
     employee: Employee & { user: User | null };
@@ -27,12 +27,38 @@ export default function EmployeeAccount() {
         employee.user?.role_id?.toString() || '',
     );
 
-    useEffect(() => {
-        const storedPassword = sessionStorage.getItem('generatedPassword');
-        if (storedPassword) {
-            setDisplayPassword(storedPassword);
+    const fetchPassword = async () => {
+        try {
+            const response = await fetch(`/api/employees/account/${employee.user.id}/first-password`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content || '',
+                },
+            });
+            const data = await response.json();
+            setDisplayPassword(data.first_password);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred.');
+            }
         }
-    }, []);
+    };
+
+    useEffect(() => {
+        // const storedPassword = sessionStorage.getItem('generatedPassword');
+        if (employee.user) {
+            fetchPassword();
+        }
+    }, [employee.user]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Employees', href: '/dashboard/employees' },
@@ -66,14 +92,13 @@ export default function EmployeeAccount() {
             }
 
             const data = await response.json();
-            sessionStorage.setItem('generatedPassword', data.password);
-            setDisplayPassword(data.password);
+            setDisplayPassword(data.first_password);
             router.reload({ only: ['employee'] });
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
             } else {
-                setError("An unknown error occurred.");
+                setError('An unknown error occurred.');
             }
         }
     };
@@ -107,7 +132,7 @@ export default function EmployeeAccount() {
             if (err instanceof Error) {
                 setError(err.message);
             } else {
-                setError("An unknown error occurred.");
+                setError('An unknown error occurred.');
             }
         }
     };
@@ -138,13 +163,13 @@ export default function EmployeeAccount() {
             }
 
             const data = await response.json();
-            setDisplayPassword(data.password);
+            setDisplayPassword(data.first_password);
             setShowPassword(true);
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
             } else {
-                setError("An unknown error occurred.");
+                setError('An unknown error occurred.');
             }
         }
     };
@@ -181,13 +206,14 @@ export default function EmployeeAccount() {
             if (err instanceof Error) {
                 setError(err.message);
             } else {
-                setError("An unknown error occurred.");
+                setError('An unknown error occurred.');
             }
         }
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Employee Account" />
             <div className="space-y-4">
                 <h1 className="text-2xl font-bold">
                     Employee Account Management
@@ -209,9 +235,7 @@ export default function EmployeeAccount() {
                         <h3 className="mb-4 text-lg font-semibold">
                             Account Details
                         </h3>
-                        <p>
-                            An account already exists for this employee.
-                        </p>
+                        <p>An account already exists for this employee.</p>
                         <div className="mt-4 max-w-44">
                             <Label
                                 htmlFor="role"
@@ -219,22 +243,6 @@ export default function EmployeeAccount() {
                             >
                                 Role
                             </Label>
-                                {/* <select
-                                    id="role"
-                                    name="role"
-                                    value={selectedRole}
-                                    onChange={(e) =>
-                                        setSelectedRole(e.target.value)
-                                    }
-                                    className=" block rounded-md border-2  border-gray-300 focus:border-gray-700 py-2 pl-3 pr-10 text-base  focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-neutral-700 sm:text-sm"
-                                >
-                                    <option value="">Select a role</option>
-                                    {roles.map((role) => (
-                                        <option key={role.id} value={role.id}>
-                                            {role.name}
-                                        </option>
-                                    ))}
-                                </select> */}
                             <Select
                                 onValueChange={(value) => {
                                     setSelectedRole(value);
@@ -245,7 +253,7 @@ export default function EmployeeAccount() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Role" />
                                 </SelectTrigger>
-                                <SelectContent >
+                                <SelectContent>
                                     {roles.map((role) => (
                                         <SelectItem
                                             key={role.id}
@@ -257,7 +265,7 @@ export default function EmployeeAccount() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="flex space-x-2 mt-4">
+                        <div className="mt-4 flex space-x-2">
                             <Button
                                 onClick={updateRole}
                                 className="bg-green-600 text-white hover:bg-green-700"
@@ -311,10 +319,7 @@ export default function EmployeeAccount() {
                             Create Account
                         </h3>
                         <p>No account has been made for this employee.</p>
-                        <Button
-                            onClick={createAccount}
-                            className="mt-4"
-                        >
+                        <Button onClick={createAccount} className="mt-4">
                             Create Account
                         </Button>
 
