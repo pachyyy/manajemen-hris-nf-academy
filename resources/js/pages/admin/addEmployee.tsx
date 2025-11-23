@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -403,7 +403,7 @@ export default function AddEmployee() {
                             <Button
                                 type="button"
                                 onClick={() => window.history.back()}
-                                className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+                                variant='secondary'
                             >
                                 Cancel
                             </Button>

@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
-use App\Models\Employee;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -14,6 +11,10 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
+
+// Route::get('test', function () {
+//         return Inertia::render('documents/uploadDocuments');
+//     })->name('test');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -26,17 +27,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // employee routing
     Route::get('dashboard/employees', function() {
-        return Inertia::render(component: 'employees/showEmployees');
+        return Inertia::render(component: 'admin/showEmployees');
     })->middleware('admin')->name('dashboard.employees');
 
     Route::get('dashboard/employees/add', function() {
-        return Inertia::render(component: 'employees/addEmployee');
+        return Inertia::render(component: 'admin/addEmployee');
     })->middleware('admin')->name('dashboard.employees.add');
 
-    Route::post('dashboard/employees', [EmployeeController::class, 'store'])->middleware('admin')->name('dashboard.employees.store');
-
     Route::get('dashboard/employees/update/{id}', function($id) {
-        return Inertia::render('employees/updateEmployee', [
+        return Inertia::render('admin/updateEmployee', [
             'id' => $id,
         ]);
     })->middleware('admin')->name('dashboard.employees.update');
@@ -44,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('admin')->name('dashboard.employees.account');
 
     Route::get('dashboard/employees/{id}/documents', function($id) {
-        return Inertia::render('employees/EmployeeDocuments', [
+        return Inertia::render('admin/employeeDocuments', [
             'employeeId' => $id
         ]);
     })->middleware('admin')->name('dashboard.employees.documents');
@@ -54,25 +53,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dataPegawai');
 
     Route::get('dashboard/attendance', function () {
-
-        $user = Auth::user();
-
-        $employee = Employee::where('user_id', $user->id)->firstOrFail();
-
-        return Inertia::render('attendance/staffAttendance', [
-            'records' => $employee->attendances()->orderBy('date','desc')->get(),
-            'user' => $user,
-        ]);
+        return Inertia::render('attendance/staffAttendance');
     })->name('dashboard.attendance');
 
     Route::get('dashboard/attendance/admin', function () {
         return Inertia::render('attendance/adminAttendance');
     })->middleware('admin')->name('attendance.admin');
 
-    Route::get('dashboard/attendance/summary',
-        [AttendanceController::class, 'summaryPage']
-        )->middleware('admin')
-        ->name('dashboard.attendance.summary');
+    Route::get('dashboard/attendance/summary', function () {
+        return Inertia::render('attendance/adminAttendanceSummary');
+    })->middleware('admin')->name('attendance.admin.summary');
 
     Route::get('penugasan', [App\Http\Controllers\TaskController::class, 'index'])->name('penugasan');
 
