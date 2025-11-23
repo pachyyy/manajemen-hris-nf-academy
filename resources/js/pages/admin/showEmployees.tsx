@@ -18,15 +18,9 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-// Helper function to capitalize the first letter of a string
-const capitalizeFirstLetter = (str: string) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-};
 
 // Helper function to format date as "DD Mon YYYY"
 const formatDate = (dateString: string) => {
@@ -39,20 +33,6 @@ const formatDate = (dateString: string) => {
     };
     return date.toLocaleDateString('en-GB', options); // 'en-GB' for day-month-year order
 };
-
-// interface Employee {
-//     id: number;
-//     first_name: string;
-//     last_name: string;
-//     division: string;
-//     position: string;
-//     join_date: Date;
-//     email: string;
-//     phone: string;
-//     status: string;
-//     document_path: string;
-//     role: number;
-// }
 
 interface Employee {
     id: number;
@@ -67,7 +47,7 @@ interface Employee {
     join_date: string;
 }
 
-export default function ShwoEmployees() {
+export default function ShowEmployees() {
     const [error, setError] = useState<string | null>(null); // Add error state
     const [posts, setPosts] = useState<Employee[]>([]); // For storing data
     const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(
@@ -149,6 +129,7 @@ export default function ShwoEmployees() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title='Employee List' />
             <div className="align-center flex justify-center p-3">
                 <h1 className="text-3xl font-bold">Employee List</h1>
                 <div className="absolute right-2 z-10">
@@ -192,14 +173,14 @@ export default function ShwoEmployees() {
                             <TableCell>{post.email}</TableCell>
                             <TableCell>{post.phone}</TableCell>
                             <TableCell>{formatDate(post.birth_date)}</TableCell>
-                            <TableCell>
-                                {capitalizeFirstLetter(post.division)}
+                            <TableCell className='capitalize'>
+                                {post.division}
                             </TableCell>
-                            <TableCell>
-                                {capitalizeFirstLetter(post.position)}
+                            <TableCell className='capitalize'>
+                                {post.position}
                             </TableCell>
-                            <TableCell>
-                                {capitalizeFirstLetter(post.status)}
+                            <TableCell className='capitalize'>
+                                {post.status}
                             </TableCell>
                             <TableCell>{formatDate(post.join_date)}</TableCell>
                             <TableCell>

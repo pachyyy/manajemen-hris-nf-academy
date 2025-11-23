@@ -63,10 +63,11 @@ class AttendanceController extends Controller
                 'status' => 'hadir',
             ]);
 
-            return response()->json([
-                'message' => 'Check-in berhasil',
-                'data' => $attendance,
-            ]);
+            // return response()->json([
+            //     'message' => 'Check-in berhasil',
+            //     'data' => $attendance,
+            // ]);
+            return response()->json($attendance, 201);
     }
 
     /**
