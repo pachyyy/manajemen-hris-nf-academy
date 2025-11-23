@@ -44,4 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'user' => $user,
         ]);
     })->name('staff.attendance');
+    // Task Management API
+    Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
+
 });
