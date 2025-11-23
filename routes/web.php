@@ -64,9 +64,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('attendance/adminAttendanceSummary');
     })->middleware('admin')->name('attendance.admin.summary');
 
-    Route::get('penugasan', function () {
-        return Inertia::render('penugasan');
-    })->name('penugasan');
+    Route::get('penugasan', [App\Http\Controllers\TaskController::class, 'index'])->name('penugasan');
+
+    // Task Management Routes
+    Route::prefix('tasks')->group(function () {
+        // Routes only for Admin and HR (must come before wildcard routes)
+        Route::middleware('hr.or.admin')->group(function () {
+            Route::get('/create', [App\Http\Controllers\TaskController::class, 'create'])->name('tasks.create');
+            Route::post('/', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
+            Route::get('/{task}/edit', [App\Http\Controllers\TaskController::class, 'edit'])->name('tasks.edit');
+            Route::put('/{task}', [App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
+            Route::delete('/{task}', [App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
+        });
+
+        // Routes accessible by all authenticated users
+        Route::get('/', [App\Http\Controllers\TaskController::class, 'index'])->name('tasks.index');
+        Route::get('/{task}', [App\Http\Controllers\TaskController::class, 'show'])->name('tasks.show');
+        Route::post('/{task}/status', [App\Http\Controllers\TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
+    });
 
     Route::get('evaluasiKerja', function () {
         return Inertia::render('evaluasiKerja');
