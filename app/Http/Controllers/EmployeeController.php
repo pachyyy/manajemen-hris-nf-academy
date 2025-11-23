@@ -214,11 +214,15 @@ class EmployeeController extends Controller
         $employee = Employee::findOrFail($id);
 
         $validated = $request->validate([
-            'bank_name' => 'required|string',
             'bank_account_number' => 'required|string',
         ]);
 
-        $employee->update($validated);
+        $updateData = [
+            'bank_name' => 'BCA', // Hardcode the bank name
+            'bank_account_number' => $validated['bank_account_number'],
+        ];
+
+        $employee->update($updateData);
 
         return response()->json($employee);
     }

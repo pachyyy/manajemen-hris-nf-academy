@@ -225,7 +225,7 @@ export default function TaskIndex({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-2">
                     <div>
                         <h1 className="text-3xl font-bold">Task Management</h1>
                         <p className="text-muted-foreground">
@@ -469,7 +469,7 @@ export default function TaskIndex({
                     </Card>
                 )}
 
-                <div className="rounded-md border">
+                <div className="rounded-md border px-2">
                     <Table>
                         <TableHeader>
                             <TableRow>
