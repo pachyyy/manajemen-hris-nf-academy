@@ -82,7 +82,7 @@ export default function StaffAttendance({
 
         const formData = new FormData();
         formData.append('status', leaveStatus);
-        if (proofFile) formData.append('proof_file', proofouuuFile);
+        if (proofFile) formData.append('proof_file', proofFile);
 
         await router.post('/api/attendance/request-leave', formData, {
             forceFormData: true,
