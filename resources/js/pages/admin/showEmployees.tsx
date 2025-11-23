@@ -130,7 +130,7 @@ export default function ShowEmployees() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title='Employee List' />
-            <div className="align-center flex justify-center p-3">
+            <div className="align-center flex p-3">
                 <h1 className="text-3xl font-bold">Employee List</h1>
                 <div className="absolute right-2 z-10">
                     <Link href={'/dashboard/employees/add'}>
