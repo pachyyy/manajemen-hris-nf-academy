@@ -37,22 +37,22 @@ import AppLogo from './app-logo';
 const adminNavItems: NavItem[] = [
     {
         title: 'Employee Management',
-        href: '/dashboard/employees',
+        href: '/dashboard/admin/employees',
         icon: Users,
     },
     {
         title: 'Role Management',
-        href: '/dashboard/roles',
+        href: '/dashboard/admin/roles',
         icon: UserCog,
     },
     {
         title: 'Attendance Summary',
-        href: '/dashboard/attendance/summary',
+        href: '/dashboard/admin/attendance/summary',
         icon: IdCard,
     },
     {
         title: 'Attendance',
-        href: '/dashboard/attendance/admin',
+        href: '/dashboard/admin/attendance/admin',
         icon: IdCard,
     },
     {
@@ -120,7 +120,7 @@ const hrNavItems: NavItem[] = [
 const employeeNavItems: NavItem[] = [
     {
         title: 'Attendance',
-        href: '/dashboard/attendance',
+        href: '/dashboard/employee/attendance',
         icon: IdCard,
     },
     {
@@ -157,10 +157,22 @@ const getNavItems = (roleName?: string): NavItem[] => {
     }
 };
 
+const getLink = (roleName?: string)=> {
+    switch (roleName) {
+        case 'Admin':
+            return '/dashboard/admin';
+        case 'Human Resource': // Example for a future HR ro    le
+            return '/dashboard/admin';
+        default:
+            return '/dashboard/employee'; // Default for employees and other roles
+    }
+};
+
 export function AppSidebar() {
     const { auth } = usePage<PageProps>().props;
     const userRole = auth.user?.role?.name;
     const mainNavItems = getNavItems(userRole);
+    const iconLink = getLink(userRole);
 
     return (
         <Sidebar collapsible="icon" variant="floating">
@@ -168,7 +180,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={iconLink} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
