@@ -179,8 +179,8 @@ export default function UpdateEmployee() {
     const divClassname = 'flex flex-col gap-2';
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Employees', href: '/dashboard/employees' },
-        { title: 'Update Employee', href: '/dashboard/employees/update' },
+        { title: 'Employees', href: '/dashboard/admin/employees' },
+        { title: 'Update Employee', href: '/dashboard/admin/employees/update' },
     ];
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

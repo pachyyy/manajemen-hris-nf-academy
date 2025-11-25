@@ -123,7 +123,7 @@ export default function ShowEmployees() {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Employee Management',
-            href: '/dashboard/employees',
+            href: '/dashboard/admin/employees',
         },
     ];
 
@@ -196,7 +196,7 @@ export default function ShowEmployees() {
                                     >
                                         <DropdownMenuGroup>
                                             <Link
-                                                href={`/dashboard/employees/update/${post.id}`}
+                                                href={`/dashboard/admin/employees/update/${post.id}`}
                                             >
                                                 <DropdownMenuItem>
                                                     Update
@@ -209,13 +209,13 @@ export default function ShowEmployees() {
                                             </DropdownMenuItem>
                                             {/* Untuk lihat dan buat akun untuk pengguna / karyawan nantinya */}
                                              <Link
-                                                href={`/dashboard/employees/account/${post.id}`}
+                                                href={`/dashboard/admin/employees/account/${post.id}`}
                                             >
                                                 <DropdownMenuItem>
                                                     Check Account
                                                 </DropdownMenuItem>
                                             </Link>
-                                            <Link href={`/dashboard/employees/${post.id}/documents`}>
+                                            <Link href={`/dashboard/admin/employees/${post.id}/documents`}>
                                                 <DropdownMenuItem>
                                                     See Documents
                                                 </DropdownMenuItem>

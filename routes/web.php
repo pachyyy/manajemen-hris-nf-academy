@@ -21,44 +21,38 @@ Route::get('/', function () {
 // })->name('test');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
+    Route::get('dashboard/admin', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('dashboard/roles', function () {
+    Route::get('dashboard/admin/roles', function() {
         return Inertia::render(component: 'roles/showRoles');
     })->middleware('admin')->name('dashboard.roles');
 
     // employee routing
-    Route::get('dashboard/employees', function () {
+    Route::get('dashboard/admin/employees', function() {
         return Inertia::render(component: 'admin/showEmployees');
     })->middleware('admin')->name('dashboard.employees');
 
-    Route::get('dashboard/employees/add', function () {
+    Route::get('dashboard/admin/employees/add', function() {
         return Inertia::render(component: 'admin/addEmployee');
     })->middleware('admin')->name('dashboard.employees.add');
 
-    Route::get('dashboard/employees/update/{id}', function ($id) {
+    Route::get('dashboard/admin/employees/update/{id}', function($id) {
         return Inertia::render('admin/updateEmployee', [
             'id' => $id,
         ]);
     })->middleware('admin')->name('dashboard.employees.update');
 
-    Route::get('dashboard/employees/account/{id}', [EmployeeController::class, 'showAccount'])
-        ->middleware('admin')
-        ->name('dashboard.employees.account');
+    Route::get('dashboard/admin/employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('admin')->name('dashboard.employees.account');
 
-    Route::get('dashboard/employees/{id}/documents', function ($id) {
+    Route::get('dashboard/admin/employees/{id}/documents', function($id) {
         return Inertia::render('admin/employeeDocuments', [
             'employeeId' => $id,
         ]);
     })->middleware('admin')->name('dashboard.employees.documents');
 
-    Route::get('dataPegawai', function () {
-        return Inertia::render('dataPegawai');
-    })->name('dataPegawai');
-
-    Route::get('dashboard/attendance', function () {
+    Route::get('dashboard/employee/attendance', function () {
         return Inertia::render('attendance/staffAttendance');
     })->name('dashboard.attendance');
 
