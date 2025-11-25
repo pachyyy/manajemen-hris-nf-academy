@@ -4,20 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TrainingParticipants extends Model
+class TrainingResult extends Model
 {
-    protected $table = 'training_participants';
-
     protected $fillable = [
         'training_id',
         'user_id',
+        'score',
         'status',
-        'attendance_status',
-        'registered_at',
-    ];
-
-    protected $casts = [
-        'registered_at' => 'datetime',
+        'certificate_path',
+        'notes',
     ];
 
     public function training()
