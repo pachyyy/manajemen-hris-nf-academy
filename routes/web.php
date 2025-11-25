@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -13,8 +17,8 @@ Route::get('/', function () {
 })->name('home');
 
 // Route::get('test', function () {
-//         return Inertia::render('documents/uploadDocuments');
-//     })->name('test');
+//     return Inertia::render('documents/uploadDocuments');
+// })->name('test');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/admin', function () {
@@ -44,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard/admin/employees/{id}/documents', function($id) {
         return Inertia::render('admin/employeeDocuments', [
-            'employeeId' => $id
+            'employeeId' => $id,
         ]);
     })->middleware('admin')->name('dashboard.employees.documents');
 
@@ -60,23 +64,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('attendance/adminAttendanceSummary');
     })->middleware('admin')->name('attendance.admin.summary');
 
-    Route::get('penugasan', [App\Http\Controllers\TaskController::class, 'index'])->name('penugasan');
+    // ===== Task Management =====
+    Route::get('penugasan', [TaskController::class, 'index'])->name('penugasan');
 
-    // Task Management Routes
     Route::prefix('tasks')->group(function () {
-        // Routes only for Admin and HR (must come before wildcard routes)
+        // Routes only for Admin and HR
         Route::middleware('hr.or.admin')->group(function () {
-            Route::get('/create', [App\Http\Controllers\TaskController::class, 'create'])->name('tasks.create');
-            Route::post('/', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
-            Route::get('/{task}/edit', [App\Http\Controllers\TaskController::class, 'edit'])->name('tasks.edit');
-            Route::put('/{task}', [App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
-            Route::delete('/{task}', [App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
+            Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
+            Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+            Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+            Route::put('/{task}', [TaskController::class, 'update'])->name('tasks.update');
+            Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
         });
 
         // Routes accessible by all authenticated users
-        Route::get('/', [App\Http\Controllers\TaskController::class, 'index'])->name('tasks.index');
-        Route::get('/{task}', [App\Http\Controllers\TaskController::class, 'show'])->name('tasks.show');
-        Route::post('/{task}/status', [App\Http\Controllers\TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
+        Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
+        Route::get('/{task}', [TaskController::class, 'show'])->name('tasks.show');
+        Route::post('/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
     });
 
     // ===== Evaluation =====
