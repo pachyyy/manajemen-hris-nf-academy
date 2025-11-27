@@ -11,11 +11,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import {
-    dashboard,
     evaluasiKerja,
     laporan,
     pelatihan,
-    penugasan,
 } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
@@ -46,18 +44,13 @@ const adminNavItems: NavItem[] = [
         icon: UserCog,
     },
     {
-        title: 'Attendance Summary',
-        href: '/dashboard/admin/attendance/summary',
-        icon: IdCard,
-    },
-    {
         title: 'Attendance',
-        href: '/dashboard/admin/attendance/admin',
+        href: '/dashboard/admin/attendance',
         icon: IdCard,
     },
     {
-        title: 'Penugasan',
-        href: penugasan(),
+        title: 'Tasks',
+        href: '/dashboard/admin/tasks',
         icon: ClipboardList,
     },
     {
@@ -86,18 +79,18 @@ const adminNavItems: NavItem[] = [
 const hrNavItems: NavItem[] = [
     {
         title: 'Employee Management',
-        href: '/dashboard/employees',
+        href: '/dashboard/admin/employees',
         icon: Users,
     },
     {
-        title: 'Attendance Summary',
-        href: '/dashboard/attendance/summary',
+        title: 'Attendance',
+        href: '/dashboard/admin/attendance',
         icon: IdCard,
     },
     {
-        title: 'Attendance',
-        href: '/dashboard/attendance/admin',
-        icon: IdCard,
+        title: 'Tasks',
+        href: '/dashboard/admin/task',
+        icon: ClipboardList,
     },
     {
         title: 'Evaluasi Kerja',
@@ -122,11 +115,6 @@ const employeeNavItems: NavItem[] = [
         title: 'Attendance',
         href: '/dashboard/employee/attendance',
         icon: IdCard,
-    },
-    {
-        title: 'Penugasan',
-        href: penugasan(),
-        icon: ClipboardList,
     },
     {
         title: 'Pelatihan',

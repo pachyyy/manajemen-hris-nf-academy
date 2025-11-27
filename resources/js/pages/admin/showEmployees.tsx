@@ -133,7 +133,7 @@ export default function ShowEmployees() {
             <div className="align-center flex p-3">
                 <h1 className="text-3xl font-bold">Employee List</h1>
                 <div className="absolute right-2 z-10">
-                    <Link href={'/dashboard/employees/add'}>
+                    <Link href={'/dashboard/admin/employees/add'}>
                         <Button className="cursor-pointer">Add Employee</Button>
                     </Link>
                 </div>

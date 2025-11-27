@@ -25,7 +25,8 @@ export default function AdminAttendanceSummary() {
     const [error, setError] = useState<string | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Rekap absensi', href: '/dashboard/attendance/summary' },
+        { title: 'Attendance', href: '/dashboard/admin/attendance' },
+        { title: 'Attendance Summary', href: '/dashboard/admin/attendance/summary' },
     ];
 
     const fetchData = async () => {

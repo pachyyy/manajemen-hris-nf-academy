@@ -22,7 +22,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/admin', function () {
-        return Inertia::render('dashboard');
+        return Inertia::render('admin-dashboard');
     })->name('dashboard');
 
     Route::get('dashboard/admin/roles', function() {
@@ -56,16 +56,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('attendance/staffAttendance');
     })->name('dashboard.attendance');
 
-    Route::get('dashboard/attendance/admin', function () {
+    Route::get('dashboard/admin/attendance', function () {
         return Inertia::render('attendance/adminAttendance');
     })->middleware('admin')->name('attendance.admin');
 
-    Route::get('dashboard/attendance/summary', function () {
+    Route::get('dashboard/admin/attendance/summary', function () {
         return Inertia::render('attendance/adminAttendanceSummary');
     })->middleware('admin')->name('attendance.admin.summary');
 
     // ===== Task Management =====
-    Route::get('penugasan', [TaskController::class, 'index'])->name('penugasan');
+    // Route::get('dashboard/admin/task', [TaskController::class, 'index'])->name('task');
+    Route::get('dashboard/admin/tasks', function () {
+        return Inertia::render('tasks/Index');
+    })->middleware('admin')->name('tasks.admin');
 
     Route::prefix('tasks')->group(function () {
         // Routes only for Admin and HR

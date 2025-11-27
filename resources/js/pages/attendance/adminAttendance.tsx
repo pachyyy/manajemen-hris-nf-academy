@@ -7,7 +7,13 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -19,7 +25,7 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ChevronDownIcon, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
@@ -64,7 +70,7 @@ export default function AdminAttendance() {
     });
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Absensi', href: '/dashboard/attendance/admin' },
+        { title: 'Attendance', href: '/dashboard/attendance/admin' },
     ];
 
     // Fetch All Records
@@ -156,7 +162,7 @@ export default function AdminAttendance() {
     // UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title='Attendance Records' />
+            <Head title="Attendance Records" />
             <div>
                 <h1 className="mb-4 text-2xl font-bold">Attendance Records</h1>
 
@@ -240,12 +246,11 @@ export default function AdminAttendance() {
                         </Select>
                     </div>
 
-                    <div className="flex items-end justify-center">
-                        <Button
-                            onClick={applyFilter}
-                        >
-                            Apply Filter
-                        </Button>
+                    <div className="flex items-end justify-center gap-3">
+                        <Button onClick={applyFilter}>Apply Filter</Button>
+                        <Link href='/dashboard/admin/attendance/summary'>
+                            <Button>Attendance Summary</Button>
+                        </Link>
                     </div>
                 </div>
 
