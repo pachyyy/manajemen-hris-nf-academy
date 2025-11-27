@@ -56,7 +56,7 @@ export default function StaffAttendance() {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Absensi',
-            href: '/dashboard/attendance',
+            href: '/dashboard/employee/attendance',
         },
     ];
 

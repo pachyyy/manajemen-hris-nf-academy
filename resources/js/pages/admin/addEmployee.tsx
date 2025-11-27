@@ -86,7 +86,7 @@ export default function AddEmployee() {
                 );
             }
 
-            window.location.href = '/dashboard/employees';
+            window.location.href = '/dashboard/admin/employees';
         } catch (err: unknown) {
             console.error('Failed to add Employee:', err);
             setError((err as Error).message || 'Failed to add Employee.');
@@ -97,8 +97,8 @@ export default function AddEmployee() {
     const divClassname = 'flex flex-col gap-2';
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Employees', href: '/dashboard/employees' },
-        { title: 'Add Employee', href: '/dashboard/employees/add' },
+        { title: 'Employees', href: '/dashboard/admin/employees' },
+        { title: 'Add Employee', href: '/dashboard/admin/employees/add' },
     ];
 
     return (
