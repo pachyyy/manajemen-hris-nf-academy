@@ -209,6 +209,17 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Document deleted']);
     }
 
+    public function serveDocument(EmployeeDocument $document)
+    {
+        if (!Storage::disk('public')->exists($document->file_path)) {
+            abort(404, 'Document not found.');
+        }
+
+        $path = Storage::disk('public')->path($document->file_path);
+
+        return response()->file($path);
+    }
+
     public function updateBankAccount(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);

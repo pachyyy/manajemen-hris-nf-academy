@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 interface Doc {
@@ -135,6 +135,7 @@ export default function EmployeeDocuments({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title='Upload Documents' />
             <h1 className="mb-4 text-2xl font-bold">
                 Employee Documents & Bank Details
             </h1>
@@ -229,13 +230,13 @@ export default function EmployeeDocuments({
                                 key={doc.id}
                                 className="flex items-center justify-between border-b pb-2"
                             >
-                                <Link
-                                    href={`/storage/${doc.file_path}`}
-                                    target="_blank"
+                                <a
+                                    href={`/documents/${doc.id}`}
+                                    target='_blank'
                                     className="text-blue-600 underline uppercase"
                                 >
                                     {doc.name}
-                                </Link>
+                                </a>
 
                                 <Button
                                     variant="destructive"
