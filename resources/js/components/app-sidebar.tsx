@@ -17,16 +17,8 @@ import {
 } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import {
-    BookOpen,
-    ClipboardList,
-    File,
-    IdCard,
-    Mail,
-    ScrollText,
-    UserCog,
-    Users,
-} from 'lucide-react';
+import { BookOpen, ClipboardCheck, ClipboardList, File, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
+
 import AppLogo from './app-logo';
 
 // --- Navigation Items for Each Role ---
@@ -44,13 +36,8 @@ const adminNavItems: NavItem[] = [
         icon: UserCog,
     },
     {
-        title: 'Attendance',
-        href: '/dashboard/admin/attendance',
-        icon: IdCard,
-    },
-    {
         title: 'Tasks',
-        href: '/dashboard/admin/tasks',
+        href: '/tasks',
         icon: ClipboardList,
     },
     {
@@ -85,11 +72,11 @@ const hrNavItems: NavItem[] = [
     {
         title: 'Attendance',
         href: '/dashboard/admin/attendance',
-        icon: IdCard,
+        icon: UserRoundPen,
     },
     {
         title: 'Tasks',
-        href: '/dashboard/admin/task',
+        href: '/tasks',
         icon: ClipboardList,
     },
     {
@@ -109,39 +96,46 @@ const hrNavItems: NavItem[] = [
     },
 ];
 
-// For a general 'Employee' role (template)
-const employeeNavItems: NavItem[] = [
-    {
-        title: 'Attendance',
-        href: '/dashboard/employee/attendance',
-        icon: IdCard,
-    },
-    {
-        title: 'Pelatihan',
-        href: pelatihan(),
-        icon: BookOpen,
-    },
-    {
-        title: 'Messages',
-        href: '/dashboard/messages',
-        icon: Mail,
-    },
-    {
-        title: 'Upload Documents',
-        href: '/dashboard/documents',
-        icon: File,
-    },
-];
-
 // Function to get the appropriate navigation items based on user role
-const getNavItems = (roleName?: string): NavItem[] => {
+const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
     switch (roleName) {
         case 'Admin':
             return adminNavItems;
-        case 'Human Resource': // Example for a future HR ro    le
+        case 'Human Resource': // Example for a future HR role
             return hrNavItems;
         default:
-            return employeeNavItems; // Default for employees and other roles
+            const dynamicEmployeeNavItems: NavItem[] = [
+                {
+                    title: 'Attendance',
+                    href: '/dashboard/employee/attendance',
+                    icon: UserRoundPen,
+                },
+                {
+                    title: 'Tasks',
+                    href: '/tasks',
+                    icon: ClipboardList,
+                },
+                
+                {
+                    title: 'Pelatihan',
+                    href: pelatihan(),
+                    icon: BookOpen,
+                },
+                {
+                    title: 'Messages',
+                    href: '/dashboard/messages',
+                    icon: Mail,
+                },
+            ];
+
+            if (userID) {
+                dynamicEmployeeNavItems.push({
+                    title: 'Upload Documents',
+                    href: `/dashboard/admin/employees/${userID}/documents`,
+                    icon: File,
+                });
+            }
+            return dynamicEmployeeNavItems; // Default for employees and other roles
     }
 };
 
@@ -149,7 +143,7 @@ const getLink = (roleName?: string)=> {
     switch (roleName) {
         case 'Admin':
             return '/dashboard/admin';
-        case 'Human Resource': // Example for a future HR ro    le
+        case 'Human Resource': // Example for a future HR role
             return '/dashboard/admin';
         default:
             return '/dashboard/employee'; // Default for employees and other roles
@@ -158,9 +152,9 @@ const getLink = (roleName?: string)=> {
 
 export function AppSidebar() {
     const { auth } = usePage<PageProps>().props;
+    const userID = auth.user?.id
     const userRole = auth.user?.role?.name;
-    const mainNavItems = getNavItems(userRole);
-    const iconLink = getLink(userRole);
+    const mainNavItems = getNavItems(userRole, userID);    const iconLink = getLink(userRole);
 
     return (
         <Sidebar collapsible="icon" variant="floating">

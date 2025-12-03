@@ -52,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->middleware('admin')->name('dashboard.employees.documents');
 
+    Route::get('documents/{document}', [EmployeeController::class, 'serveDocument'])->middleware('admin')->name('documents.serve');
+
     Route::get('dashboard/employee/attendance', function () {
         return Inertia::render('attendance/staffAttendance');
     })->name('dashboard.attendance');
@@ -72,13 +74,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('tasks')->group(function () {
         // Routes only for Admin and HR
-        Route::middleware('hr.or.admin')->group(function () {
-            Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
-            Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
-            Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
-            Route::put('/{task}', [TaskController::class, 'update'])->name('tasks.update');
-            Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
-        });
+        Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+        Route::put('/{task}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 
         // Routes accessible by all authenticated users
         Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
@@ -86,12 +86,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
     });
 
-    // ===== Evaluation =====
+     // Evaluation Period Management Routes (Admin/HR only) - View Only
+    Route::prefix('evaluation-periods')->middleware('hr.or.admin')->group(function () {
+        Route::get('/', [App\Http\Controllers\EvaluationPeriodController::class, 'index'])->name('evaluation-periods.index');
+        Route::get('/{period}', [App\Http\Controllers\EvaluationPeriodController::class, 'show'])->name('evaluation-periods.show');
+        Route::get('/{period}/criteria', [App\Http\Controllers\EvaluationCriteriaController::class, 'index'])->name('evaluation-periods.criteria.index');
+    });
+
+    // Penilaian Kerja - View Only (Admin/HR only)
+    Route::middleware('hr.or.admin')->group(function () {
+        Route::get('/penilaian-kerja', function () {
+            return redirect()->route('evaluation-periods.index');
+        })->name('penilaian-kerja.index');
+
+        Route::get('/penilaian-kerja/create', [App\Http\Controllers\EvaluationPeriodController::class, 'createUnified'])->name('penilaian-kerja.create');
+    });
+
+    // Evaluation Routes - View Only
+    Route::prefix('evaluations')->group(function () {
+        // Routes for Admin/HR
+        Route::middleware('hr.or.admin')->group(function () {
+            Route::get('/', [App\Http\Controllers\EvaluationController::class, 'index'])->name('evaluations.index');
+        });
+
+        // Routes for all authenticated users
+        Route::get('/self-assessment', [App\Http\Controllers\EvaluationController::class, 'selfAssessmentList'])->name('evaluations.self-assessment.list');
+        Route::get('/self-assessment/{period}', [App\Http\Controllers\EvaluationController::class, 'selfAssessmentForm'])->name('evaluations.self-assessment.form');
+        Route::get('/results', [App\Http\Controllers\EvaluationController::class, 'results'])->name('evaluations.results');
+        Route::get('/{evaluation}', [App\Http\Controllers\EvaluationController::class, 'show'])->name('evaluations.show');
+    });
+
     Route::get('evaluasiKerja', function () {
-        return Inertia::render('evaluasiKerja');
+        $user = Auth::user();
+
+        // Admin/HR redirect to penilaian kerja index
+        if ($user->role_id == 1 || $user->role_id == 2) {
+            return redirect()->route('penilaian-kerja.index');
+        }
+
+        // Employee redirect to self-assessment
+        return redirect()->route('evaluations.self-assessment.list');
     })->name('evaluasiKerja');
 
-    // ===== Training (Pelatihan) =====
+     // ===== Training (Pelatihan) =====
     // Halaman utama pelatihan (URL dan name lama tetap dipakai)
     Route::get('pelatihan', [TrainingController::class, 'index'])->name('pelatihan');
 
