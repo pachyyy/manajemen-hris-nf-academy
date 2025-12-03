@@ -39,6 +39,32 @@ Route::middleware('auth:sanctum')->group(function () {
     // Task Management API
     Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
 
+     // Evaluation Period Management API (Admin/HR only)
+    Route::prefix('evaluation-periods')->middleware('hr.or.admin')->group(function () {
+        Route::post('/', [\App\Http\Controllers\EvaluationPeriodController::class, 'storeWithCriteria']);
+        Route::put('/{period}', [\App\Http\Controllers\EvaluationPeriodController::class, 'update']);
+        Route::delete('/{period}', [\App\Http\Controllers\EvaluationPeriodController::class, 'destroy']);
+        Route::post('/{period}/open', [\App\Http\Controllers\EvaluationPeriodController::class, 'open']);
+        Route::post('/{period}/close', [\App\Http\Controllers\EvaluationPeriodController::class, 'close']);
+
+        // Criteria Management API
+        Route::post('/{period}/criteria', [\App\Http\Controllers\EvaluationCriteriaController::class, 'store']);
+        Route::put('/{period}/criteria/{criteria}', [\App\Http\Controllers\EvaluationCriteriaController::class, 'update']);
+        Route::delete('/{period}/criteria/{criteria}', [\App\Http\Controllers\EvaluationCriteriaController::class, 'destroy']);
+    });
+
+    // Evaluation Management API
+    Route::prefix('evaluations')->group(function () {
+        // Admin/HR actions
+        Route::middleware('hr.or.admin')->group(function () {
+            Route::post('/{evaluation}/approve', [\App\Http\Controllers\EvaluationController::class, 'approveEvaluation']);
+            Route::post('/{evaluation}/request-revision', [\App\Http\Controllers\EvaluationController::class, 'requestRevision']);
+        });
+
+        // Employee actions
+        Route::post('/{evaluation}/submit', [\App\Http\Controllers\EvaluationController::class, 'submitSelfAssessment']);
+    });
+
     Route::get('/staff/attendance', function (Request $request) {
         $user = $request->user();
         $employee = \App\Models\Employee::where('user_id', $user->id)->firstOrFail();

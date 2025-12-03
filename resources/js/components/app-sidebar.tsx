@@ -17,17 +17,8 @@ import {
 } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import {
-    BookOpen,
-    ClipboardList,
-    File,
-    IdCard,
-    Mail,
-    ScrollText,
-    UserCog,
-    UserRoundPen,
-    Users,
-} from 'lucide-react';
+import { BookOpen, ClipboardCheck, ClipboardList, File, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
+
 import AppLogo from './app-logo';
 
 // --- Navigation Items for Each Role ---
@@ -43,11 +34,6 @@ const adminNavItems: NavItem[] = [
         title: 'Role Management',
         href: '/dashboard/admin/roles',
         icon: UserCog,
-    },
-    {
-        title: 'Attendance',
-        href: '/dashboard/admin/attendance',
-        icon: UserRoundPen,
     },
     {
         title: 'Tasks',
@@ -129,6 +115,7 @@ const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
                     href: '/tasks',
                     icon: ClipboardList,
                 },
+                
                 {
                     title: 'Pelatihan',
                     href: pelatihan(),
