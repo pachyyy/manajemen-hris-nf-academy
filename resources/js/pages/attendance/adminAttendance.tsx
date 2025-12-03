@@ -1,8 +1,45 @@
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { useEffect, useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import { ChevronDownIcon, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { DateRange } from 'react-day-picker';
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    };
+    return date.toLocaleDateString('en-GB', options); // 'en-GB' for day-month-year order
+};
 
 interface AttendaceRecord {
     id: number;
@@ -19,14 +56,21 @@ interface AttendaceRecord {
 
 export default function AdminAttendance() {
     const [records, setRecords] = useState<AttendaceRecord[]>([]);
-    const [date, setDate] = useState("");
-    const [division, setDivision] = useState("");
+    const [division, setDivision] = useState('all');
     const [error, setError] = useState<string | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 7);
+
+    const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
+        from: sevenDaysAgo,
+        to: today,
+    });
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Absensi', href: '/dashboard/attendance/admin' },
+        { title: 'Attendance', href: '/dashboard/attendance/admin' },
     ];
 
     // Fetch All Records
@@ -93,60 +137,120 @@ export default function AdminAttendance() {
         try {
             const params = new URLSearchParams();
 
-            if (date) params.append("date", date);
-            if (division) params.append("division", division);
+            if (dateRange?.from)
+                params.append('start_date', dateRange.from.toISOString());
+            if (dateRange?.to)
+                params.append('end_date', dateRange.to.toISOString());
+            if (division && division !== 'all')
+                params.append('division', division);
 
-            const res = await fetch(`/api/attendance/filter?${params.toString()}`, {
-                headers: { Accept: "application/json" }
-            });
+            const res = await fetch(
+                `/api/attendance/filter?${params.toString()}`,
+                {
+                    headers: { Accept: 'application/json' },
+                },
+            );
 
             const data = await res.json();
             setRecords(data);
         } catch (err) {
             console.log(err);
-            setError("Failed to apply filter");
+            setError('Failed to apply filter');
         }
     };
 
     // UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Attendance Records" />
             <div>
                 <h1 className="mb-4 text-2xl font-bold">Attendance Records</h1>
 
-                <div className="flex gap-4 mb-4">
-                    <div>
-                        <label className="text-sm font-semibold">Filter by Date</label>
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="border p-2 rounded w-full"
-                        />
+                {/*  Date filter  */}
+                <div className="mb-4 flex max-w-2xl gap-4">
+                    <div className="flex flex-col justify-end">
+                        <Label className="text-sm font-semibold">
+                            Filter by Date
+                        </Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-between font-normal"
+                                >
+                                    {dateRange?.from ? (
+                                        dateRange.to ? (
+                                            <>
+                                                {formatDate(
+                                                    dateRange.from.toDateString(),
+                                                )}{' '}
+                                                -{' '}
+                                                {formatDate(
+                                                    dateRange.to.toDateString(),
+                                                )}
+                                            </>
+                                        ) : (
+                                            formatDate(
+                                                dateRange.from.toDateString(),
+                                            )
+                                        )
+                                    ) : (
+                                        'Select date range'
+                                    )}
+                                    <ChevronDownIcon />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-auto overflow-hidden p-0"
+                                align="start"
+                            >
+                                <Calendar
+                                    mode="range"
+                                    defaultMonth={dateRange?.from}
+                                    selected={dateRange}
+                                    captionLayout="dropdown"
+                                    onSelect={setDateRange}
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
 
                     <div>
-                        <label className="text-sm font-semibold">Filter by Division</label>
-                        <select
+                        <Label className="text-sm font-semibold">
+                            Filter by Division
+                        </Label>
+                        <Select
                             value={division}
-                            onChange={(e) => setDivision(e.target.value)}
-                            className="border p-2 rounded w-full"
+                            onValueChange={(value) => setDivision(value)}
                         >
-                            <option value="">All</option>
-                            <option value="admin">Admin</option>
-                            <option value="marketing">Marketing</option>
-                            <option value="operasional">Operasional</option>
-                            <option value="riset dan pengembangan">Riset dan Pengembangan</option>
-                        </select>
+                            <SelectTrigger
+                                className="w-full"
+                                name="division"
+                                id="division"
+                            >
+                                <SelectValue placeholder="Select Division" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All</SelectItem>
+                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="marketing">
+                                    Marketing
+                                </SelectItem>
+                                <SelectItem value="operasional">
+                                    Operasional
+                                </SelectItem>
+                                <SelectItem value="riset dan pengembangan">
+                                    Riset dan Pengembangan
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
-                    <div className="flex items-end">
-                        <Button
-                            onClick={applyFilter}
-                            className="bg-blue-600 text-white"
-                        >
-                            Apply Filter
-                        </Button>
+                    <div className="flex items-end justify-center gap-3">
+                        <Button onClick={applyFilter}>Apply Filter</Button>
+                        <Link href='/dashboard/admin/attendance/summary'>
+                            <Button>Attendance Summary</Button>
+                        </Link>
                     </div>
                 </div>
 
@@ -157,63 +261,63 @@ export default function AdminAttendance() {
                     onCancel={() => setIsDeleteModalOpen(false)}
                     onConfirm={confirmDelete}
                 />
-
-                <table className="mt-4 w-full border">
-                    <thead>
-                        <tr className="bg-gray-100 dark:bg-neutral-700">
-                            <th className="border p-2">Employee</th>
-                            <th className="border p-2">Division</th>
-                            <th className="border p-2">Date</th>
-                            <th className="border p-2">Check In</th>
-                            <th className="border p-2">Check Out</th>
-                            <th className="border p-2">Status</th>
-                            <th className="border p-2">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {records.length === 0 ? (
-                            <tr>
-                                <td className="p-4 text-center" colSpan={7}>
-                                    No attendance records found.
-                                </td>
-                            </tr>
-                        ) : (
-                            records.map((rec) => (
-                                <tr key={rec.id} className="border-b">
-                                    <td className="border p-2">
-                                        {rec.employee.first_name}{' '}
-                                        {rec.employee.last_name}
-                                    </td>
-                                    <td className="border p-2">
-                                        {rec.employee.division}
-                                    </td>
-                                    <td className="border p-2">{rec.date}</td>
-                                    <td className="border p-2">
-                                        {rec.check_in ?? '-'}
-                                    </td>
-                                    <td className="border p-2">
-                                        {rec.check_out ?? '-'}
-                                    </td>
-                                    <td className="border p-2 capitalize">
-                                        {rec.status}
-                                    </td>
-                                    <td className="border p-2">
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() =>
-                                                openDeleteModal(rec.id)
-                                            }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
             </div>
+            <Table className="mx-auto w-full p-2">
+                <TableCaption>A list of attendance record</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-xs">Employee's Name</TableHead>
+                        <TableHead>Division</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Check In</TableHead>
+                        <TableHead>Check Out</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Action</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {records.length === 0 ? (
+                        <TableRow>
+                            <TableCell className="p-4 text-center" colSpan={7}>
+                                No attendance records found.
+                            </TableCell>
+                        </TableRow>
+                    ) : (
+                        records.map((rec) => (
+                            <TableRow key={rec.id} className="border-b">
+                                <TableCell className="">
+                                    {rec.employee.first_name}{' '}
+                                    {rec.employee.last_name}
+                                </TableCell>
+                                <TableCell className="">
+                                    {rec.employee.division}
+                                </TableCell>
+                                <TableCell className="">
+                                    {formatDate(rec.date)}
+                                </TableCell>
+                                <TableCell className="">
+                                    {rec.check_in ?? '-'}
+                                </TableCell>
+                                <TableCell className="">
+                                    {rec.check_out ?? '-'}
+                                </TableCell>
+                                <TableCell className="capitalize">
+                                    {rec.status}
+                                </TableCell>
+                                <TableCell className="">
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => openDeleteModal(rec.id)}
+                                    >
+                                        <Trash2 /> Delete
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
         </AppLayout>
     );
 }

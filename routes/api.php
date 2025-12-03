@@ -21,10 +21,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('employees/{id}/documents', [EmployeeController::class, 'uploadDocument'])->middleware('admin');
     Route::get('employees/{id}/documents', [EmployeeController::class, 'getDocuments'])->middleware('admin');
     Route::delete('documents/{id}', [EmployeeController::class, 'deleteDocument'])->middleware('admin');
+    Route::post('employees/{id}/bank-account', [EmployeeController::class, 'updateBankAccount'])->middleware('admin');
     Route::apiResource('roles', RoleController::class)->middleware('admin');
     Route::delete('attendance/{id}', [AttendanceController::class, 'destroy'])->middleware('admin');
     Route::get('attendance/summary', [AttendanceController::class, 'summary'])->middleware('admin');
     Route::get('attendance/filter', [AttendanceController::class, 'filter'])->middleware('admin');
+    Route::get('employees/account/{id}/first-password', [EmployeeController::class, 'getFirstPassword'])->middleware('admin');
 
     // View attendance
     Route::get('attendance', [AttendanceController::class, 'index']);
@@ -37,14 +39,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Task Management API
     Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
 
-    // Evaluation Period Management API (Admin/HR only)
+     // Evaluation Period Management API (Admin/HR only)
     Route::prefix('evaluation-periods')->middleware('hr.or.admin')->group(function () {
         Route::post('/', [\App\Http\Controllers\EvaluationPeriodController::class, 'storeWithCriteria']);
         Route::put('/{period}', [\App\Http\Controllers\EvaluationPeriodController::class, 'update']);
         Route::delete('/{period}', [\App\Http\Controllers\EvaluationPeriodController::class, 'destroy']);
         Route::post('/{period}/open', [\App\Http\Controllers\EvaluationPeriodController::class, 'open']);
         Route::post('/{period}/close', [\App\Http\Controllers\EvaluationPeriodController::class, 'close']);
-        
+
         // Criteria Management API
         Route::post('/{period}/criteria', [\App\Http\Controllers\EvaluationCriteriaController::class, 'store']);
         Route::put('/{period}/criteria/{criteria}', [\App\Http\Controllers\EvaluationCriteriaController::class, 'update']);
@@ -62,5 +64,16 @@ Route::middleware('auth:sanctum')->group(function () {
         // Employee actions
         Route::post('/{evaluation}/submit', [\App\Http\Controllers\EvaluationController::class, 'submitSelfAssessment']);
     });
+
+    Route::get('/staff/attendance', function (Request $request) {
+        $user = $request->user();
+        $employee = \App\Models\Employee::where('user_id', $user->id)->firstOrFail();
+        return response()->json(
+            ['records' => $employee->attendances()->orderBy('date', 'desc')->get(),
+            'user' => $user,
+        ]);
+    })->name('staff.attendance');
+    // Task Management API
+    Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
 
 });

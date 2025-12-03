@@ -93,7 +93,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::with('user')->findOrFail($id);
         $roles = Role::all();
-        return Inertia::render('employees/employeeAccount', [
+        return Inertia::render('admin/employeeAccount', [
             'employee' => $employee,
             'roles' => $roles,
         ]);
@@ -113,6 +113,7 @@ class EmployeeController extends Controller
             'email' => $employee->email,
             'password' => Hash::make($password),
             'role_id' => 2, // Assuming 2 is the role for employees
+            'first_password' => $password,
         ]);
 
         $employee->user_id = $user->id;
@@ -139,12 +140,22 @@ class EmployeeController extends Controller
         return response()->json(null, 204);
     }
 
+    public function getFirstPassword($id) {
+        $user = User::find($id);
+
+        return response()->json([
+            'message' => 'Success',
+            'first_password' => $user->first_password,
+        ]);
+    }
+
     public function resetPassword(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
         $newPassword = Str::random(8);
         $user->password = Hash::make($newPassword);
+        $user->first_password = $newPassword;
         $user->save();
 
         return response()->json([
@@ -196,5 +207,34 @@ class EmployeeController extends Controller
 
         $doc->delete();
         return response()->json(['message' => 'Document deleted']);
+    }
+
+    public function serveDocument(EmployeeDocument $document)
+    {
+        if (!Storage::disk('public')->exists($document->file_path)) {
+            abort(404, 'Document not found.');
+        }
+
+        $path = Storage::disk('public')->path($document->file_path);
+
+        return response()->file($path);
+    }
+
+    public function updateBankAccount(Request $request, $id)
+    {
+        $employee = Employee::findOrFail($id);
+
+        $validated = $request->validate([
+            'bank_account_number' => 'required|string',
+        ]);
+
+        $updateData = [
+            'bank_name' => 'BCA', // Hardcode the bank name
+            'bank_account_number' => $validated['bank_account_number'],
+        ];
+
+        $employee->update($updateData);
+
+        return response()->json($employee);
     }
 }
