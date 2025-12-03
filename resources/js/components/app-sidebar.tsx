@@ -13,7 +13,7 @@ import {
 import { dashboard, dataPegawai, evaluasiKerja, laporan, pelatihan, penugasan } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, ClipboardList, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
+import { BookOpen, ClipboardCheck, ClipboardList, File, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // --- Navigation Items for Each Role ---
@@ -114,9 +114,19 @@ const employeeNavItems: NavItem[] = [
         icon: ClipboardList,
     },
     {
+        title: 'Evaluasi Kerja',
+        href: evaluasiKerja(),
+        icon: ClipboardCheck,
+    },
+    {
         title: 'Pelatihan',
         href: pelatihan(),
         icon: BookOpen,
+    },
+    {
+        title: 'Upload Documents',
+        href: '/dashboard/documents',
+        icon: File,
     },
     {
         title: 'Messages',
