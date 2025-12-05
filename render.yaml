@@ -1,0 +1,63 @@
+services:
+  # The Web Service for your Laravel Application
+  - type: web
+    name: nf-academy-hris # Or your preferred app name
+    env: php
+    plan: free # Or your preferred paid plan
+    buildCommand: |
+    # Install PHP and Node dependencies
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+    npm install
+
+    # Build the frontend assets
+    npm run build
+
+    # Run database migrations and link storage
+    # The --force flag is required in production
+    php artisan migrate --force
+    php artisan storage:link
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    healthCheckPath: /up
+    envVars:
+          # --- Base Laravel Config ---
+    - key: APP_URL
+      value: https://nf-academy-hris.onrender.com # Change this if you updated the name
+    - key: APP_KEY
+      generateValue: true # Render will automatically generate a secure app key
+    - key: APP_ENV
+      value: production
+    - key: DEBUG_MODE
+      value: false
+
+    # --- External Database Connection ---
+    # IMPORTANT: Add the values for these keys in your service's Environment tab on Render.
+    - key: DB_CONNECTION
+      value: mysql
+    - key: DB_HOST
+    - key: DB_PORT
+    - key: DB_DATABASE
+    - key: DB_USERNAME
+    - key: DB_PASSWORD
+
+    # --- Redis Connection (from the Redis service below) ---
+    - key: REDIS_HOST
+    fromService:
+      type: pserv
+      name: my-laravel-redis # Ensure this matches the Redis service name below
+    property: host
+    - key: REDIS_PORT
+    fromService:
+      type: pserv
+      name: my-laravel-redis
+      property: port
+      - key: REDIS_PASSWORD
+      fromService:
+        type: pserv
+        name: my-laravel-redis
+        property: password
+
+    # The Redis Service for Caching/Queues
+    - type: pserv
+        name: my-laravel-redis # You can change this name if you like
+        env: redis
+        plan: free
