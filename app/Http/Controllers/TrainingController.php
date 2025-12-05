@@ -19,10 +19,20 @@ class TrainingController extends Controller
             ->orderBy('start_time', 'desc')
             ->get();
 
-        // Cocok dengan pelatihan.tsx (props: trainings, userRole)
+        if ($user) {
+            $registeredTrainingIds = TrainingParticipants::where('user_id', $user->id)
+                ->whereIn('training_id', $trainings->pluck('id'))
+                ->pluck('training_id')
+                ->flip();
+
+            $trainings->each(function ($training) use ($registeredTrainingIds) {
+                $training->is_registered = isset($registeredTrainingIds[$training->id]);
+            });
+        }
+
         return Inertia::render('pelatihan', [
             'trainings' => $trainings,
-            'userRole'  => $user->role ?? null,
+            'canManage' => in_array(strtolower(optional($user->role)->name), ['admin', 'hr']),
         ]);
     }
 
@@ -48,7 +58,9 @@ class TrainingController extends Controller
 
         $data['created_by'] = Auth::id();
 
-        Training::create($data);
+        $training = Training::create($data);
+
+        event(new \App\Events\TrainingCreated($training));
 
         // Balik ke halaman /pelatihan
         return redirect()->route('pelatihan')->with('success', 'Training created successfully.');

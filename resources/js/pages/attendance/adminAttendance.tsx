@@ -70,7 +70,7 @@ export default function AdminAttendance() {
     });
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Attendance', href: '/dashboard/attendance/admin' },
+        { title: 'Kehadiran', href: '/attendance' },
     ];
 
     // Fetch All Records
@@ -110,6 +110,7 @@ export default function AdminAttendance() {
                 method: 'DELETE',
                 headers: {
                     Accept: 'application/json',
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN':
                         (
                             document.querySelector(
@@ -162,9 +163,9 @@ export default function AdminAttendance() {
     // UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Attendance Records" />
-            <div>
-                <h1 className="mb-4 text-2xl font-bold">Attendance Records</h1>
+            <Head title="Daftar Kehadiran" />
+            <div className='p-2'>
+                <h1 className="mb-4 text-2xl font-bold">Daftar Kehadiran</h1>
 
                 {/*  Date filter  */}
                 <div className="mb-4 flex max-w-2xl gap-4">
@@ -248,7 +249,7 @@ export default function AdminAttendance() {
 
                     <div className="flex items-end justify-center gap-3">
                         <Button onClick={applyFilter}>Apply Filter</Button>
-                        <Link href='/dashboard/admin/attendance/summary'>
+                        <Link href='/attendance/summary'>
                             <Button>Attendance Summary</Button>
                         </Link>
                     </div>
@@ -289,7 +290,7 @@ export default function AdminAttendance() {
                                     {rec.employee.first_name}{' '}
                                     {rec.employee.last_name}
                                 </TableCell>
-                                <TableCell className="">
+                                <TableCell className="capitalize">
                                     {rec.employee.division}
                                 </TableCell>
                                 <TableCell className="">

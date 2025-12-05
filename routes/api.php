@@ -13,20 +13,20 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
 
     // HR atau Admin
-    Route::apiResource('employees', EmployeeController::class)->middleware('admin');
-    Route::post('employees/{id}/create-account', [EmployeeController::class, 'createAccount'])->middleware('admin');
-    Route::post('employees/account/{id}/reset-password', [EmployeeController::class, 'resetPassword'])->middleware('admin');
-    Route::delete('employees/account/{id}', [EmployeeController::class, 'deleteAccount'])->middleware('admin');
-    Route::put('employees/account/{id}/role', [EmployeeController::class, 'updateRole'])->middleware('admin');
-    Route::post('employees/{id}/documents', [EmployeeController::class, 'uploadDocument'])->middleware('admin');
-    Route::get('employees/{id}/documents', [EmployeeController::class, 'getDocuments'])->middleware('admin');
-    Route::delete('documents/{id}', [EmployeeController::class, 'deleteDocument'])->middleware('admin');
-    Route::post('employees/{id}/bank-account', [EmployeeController::class, 'updateBankAccount'])->middleware('admin');
-    Route::apiResource('roles', RoleController::class)->middleware('admin');
-    Route::delete('attendance/{id}', [AttendanceController::class, 'destroy'])->middleware('admin');
-    Route::get('attendance/summary', [AttendanceController::class, 'summary'])->middleware('admin');
+    Route::apiResource('employees', EmployeeController::class)->middleware('hr.or.admin');
+    Route::post('employees/{id}/create-account', [EmployeeController::class, 'createAccount'])->middleware('hr.or.admin');
+    Route::post('employees/account/{id}/reset-password', [EmployeeController::class, 'resetPassword'])->middleware('hr.or.admin');
+    Route::delete('employees/account/{id}', [EmployeeController::class, 'deleteAccount'])->middleware('hr.or.admin');
+    Route::put('employees/account/{id}/role', [EmployeeController::class, 'updateRole'])->middleware('hr.or.admin');
+    Route::post('employees/{id}/documents', [EmployeeController::class, 'uploadDocument'])->middleware('hr.or.admin');
+    Route::get('employees/{id}/documents', [EmployeeController::class, 'getDocuments'])->middleware('hr.or.admin');
+    Route::delete('documents/{id}', [EmployeeController::class, 'deleteDocument'])->middleware('hr.or.admin');
+    Route::post('employees/{id}/bank-account', [EmployeeController::class, 'updateBankAccount'])->middleware('hr.or.admin');
+    Route::apiResource('roles', RoleController::class)->middleware('hr.or.admin');
+    Route::delete('attendance/{id}', [AttendanceController::class, 'destroy'])->middleware('hr.or.admin');
+    Route::get('attendance/summary', [AttendanceController::class, 'summary'])->middleware('hr.or.admin');
     Route::get('attendance/filter', [AttendanceController::class, 'filter'])->middleware('admin');
-    Route::get('employees/account/{id}/first-password', [EmployeeController::class, 'getFirstPassword'])->middleware('admin');
+    Route::get('employees/account/{id}/first-password', [EmployeeController::class, 'getFirstPassword'])->middleware('hr.or.admin');
 
     // View attendance
     Route::get('attendance', [AttendanceController::class, 'index']);
@@ -65,6 +65,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{evaluation}/submit', [\App\Http\Controllers\EvaluationController::class, 'submitSelfAssessment']);
     });
 
+    // Staff document and bank details management
+    Route::get('/staff/employee', [EmployeeController::class, 'getStaffEmployee']);
+    Route::get('/staff/documents', [EmployeeController::class, 'getStaffDocuments']);
+    Route::post('/staff/documents', [EmployeeController::class, 'uploadStaffDocument']);
+    Route::delete('/staff/documents/{id}', [EmployeeController::class, 'deleteStaffDocument']);
+    Route::post('/staff/bank-account', [EmployeeController::class, 'updateStaffBankAccount']);
+
     Route::get('/staff/attendance', function (Request $request) {
         $user = $request->user();
         $employee = \App\Models\Employee::where('user_id', $user->id)->firstOrFail();
@@ -75,5 +82,11 @@ Route::middleware('auth:sanctum')->group(function () {
     })->name('staff.attendance');
     // Task Management API
     Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
+
+    // Message routes
+    Route::get('/messages', [\App\Http\Controllers\MessageController::class, 'index']);
+    Route::put('/messages/{message}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead']);
+    Route::put('/messages/read-all', [\App\Http\Controllers\MessageController::class, 'markAllAsRead']);
+    Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])->middleware('hr.or.admin');
 
 });

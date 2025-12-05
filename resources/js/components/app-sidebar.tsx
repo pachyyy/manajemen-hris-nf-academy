@@ -17,7 +17,7 @@ import {
 } from '@/routes';
 import { type NavItem, type PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, ClipboardCheck, ClipboardList, File, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
+import { BookOpen, UserRoundPen, ClipboardList, File, IdCard, Mail, ScrollText, UserCog, Users } from 'lucide-react';
 
 import AppLogo from './app-logo';
 
@@ -26,17 +26,22 @@ import AppLogo from './app-logo';
 // For 'Admin HR' role
 const adminNavItems: NavItem[] = [
     {
-        title: 'Employee Management',
-        href: '/dashboard/admin/employees',
+        title: 'Pegawai',
+        href: '/employees',
         icon: Users,
     },
     {
-        title: 'Role Management',
-        href: '/dashboard/admin/roles',
+        title: 'Manajemen Peran',
+        href: '/roles',
         icon: UserCog,
     },
     {
-        title: 'Tasks',
+        title: 'Kehadiran',
+        href: '/attendance',
+        icon: UserRoundPen,
+    },
+    {
+        title: 'Penugasan',
         href: '/tasks',
         icon: ClipboardList,
     },
@@ -56,8 +61,8 @@ const adminNavItems: NavItem[] = [
         icon: ScrollText,
     },
     {
-        title: 'Messages',
-        href: '/dashboard/messages',
+        title: 'Pesan',
+        href: '/messages',
         icon: Mail,
     },
 ];
@@ -65,17 +70,17 @@ const adminNavItems: NavItem[] = [
 // For a potential 'HR' role (template)
 const hrNavItems: NavItem[] = [
     {
-        title: 'Employee Management',
-        href: '/dashboard/admin/employees',
+        title: 'Pegawai',
+        href: '/employees',
         icon: Users,
     },
     {
-        title: 'Attendance',
-        href: '/dashboard/admin/attendance',
+        title: 'Kehadiran',
+        href: '/attendance',
         icon: UserRoundPen,
     },
     {
-        title: 'Tasks',
+        title: 'Penugasan',
         href: '/tasks',
         icon: ClipboardList,
     },
@@ -90,8 +95,8 @@ const hrNavItems: NavItem[] = [
         icon: BookOpen,
     },
     {
-        title: 'Messages',
-        href: '/dashboard/messages',
+        title: 'Pesan',
+        href: '/messages',
         icon: Mail,
     },
 ];
@@ -106,32 +111,32 @@ const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
         default:
             const dynamicEmployeeNavItems: NavItem[] = [
                 {
-                    title: 'Attendance',
-                    href: '/dashboard/employee/attendance',
+                    title: 'Kehadiran',
+                    href: '/employee-attendance',
                     icon: UserRoundPen,
                 },
                 {
-                    title: 'Tasks',
+                    title: 'Penugasan',
                     href: '/tasks',
                     icon: ClipboardList,
                 },
-                
+
                 {
                     title: 'Pelatihan',
                     href: pelatihan(),
                     icon: BookOpen,
                 },
                 {
-                    title: 'Messages',
-                    href: '/dashboard/messages',
+                    title: 'Pesan',
+                    href: '/messages',
                     icon: Mail,
                 },
             ];
 
             if (userID) {
                 dynamicEmployeeNavItems.push({
-                    title: 'Upload Documents',
-                    href: `/dashboard/admin/employees/${userID}/documents`,
+                    title: 'Unggah Dokumen',
+                    href: `/employee-documents/${userID}`,
                     icon: File,
                 });
             }
@@ -139,22 +144,11 @@ const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
     }
 };
 
-const getLink = (roleName?: string)=> {
-    switch (roleName) {
-        case 'Admin':
-            return '/dashboard/admin';
-        case 'Human Resource': // Example for a future HR role
-            return '/dashboard/admin';
-        default:
-            return '/dashboard/employee'; // Default for employees and other roles
-    }
-};
-
 export function AppSidebar() {
     const { auth } = usePage<PageProps>().props;
     const userID = auth.user?.id
     const userRole = auth.user?.role?.name;
-    const mainNavItems = getNavItems(userRole, userID);    const iconLink = getLink(userRole);
+    const mainNavItems = getNavItems(userRole, userID);
 
     return (
         <Sidebar collapsible="icon" variant="floating">
@@ -162,7 +156,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={iconLink} prefetch>
+                            <Link href='/dashboard' prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

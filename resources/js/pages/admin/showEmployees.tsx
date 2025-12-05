@@ -122,18 +122,18 @@ export default function ShowEmployees() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Employee Management',
-            href: '/dashboard/admin/employees',
+            title: 'Pegawai',
+            href: '/employees',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title='Employee List' />
+            <Head title='Pegawai' />
             <div className="align-center flex p-3">
-                <h1 className="text-3xl font-bold">Employee List</h1>
+                <h1 className="text-3xl font-bold">Pegawai</h1>
                 <div className="absolute right-2 z-10">
-                    <Link href={'/dashboard/admin/employees/add'}>
+                    <Link href={'/employees/add'}>
                         <Button className="cursor-pointer">Add Employee</Button>
                     </Link>
                 </div>
@@ -196,7 +196,7 @@ export default function ShowEmployees() {
                                     >
                                         <DropdownMenuGroup>
                                             <Link
-                                                href={`/dashboard/admin/employees/update/${post.id}`}
+                                                href={`/employees/update/${post.id}`}
                                             >
                                                 <DropdownMenuItem>
                                                     Update
@@ -209,13 +209,13 @@ export default function ShowEmployees() {
                                             </DropdownMenuItem>
                                             {/* Untuk lihat dan buat akun untuk pengguna / karyawan nantinya */}
                                              <Link
-                                                href={`/dashboard/admin/employees/account/${post.id}`}
+                                                href={`/employees/account/${post.id}`}
                                             >
                                                 <DropdownMenuItem>
                                                     Check Account
                                                 </DropdownMenuItem>
                                             </Link>
-                                            <Link href={`/dashboard/admin/employees/${post.id}/documents`}>
+                                            <Link href={`/employees/${post.id}/documents`}>
                                                 <DropdownMenuItem>
                                                     See Documents
                                                 </DropdownMenuItem>
