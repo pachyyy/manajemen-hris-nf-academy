@@ -51,18 +51,16 @@ class AttendanceController extends Controller
             ->first();
 
             if ($existing) {
-                return response()->json([
-                    'message' => 'Anda sudah melakukan check-in hari ini.'
-                ], 400);
+                return redirect()->back()->withErrors(['message' => 'Anda sudah melakukan check-in hari ini.']);
             }
 
-            $attendance = Attendance::create([
+            Attendance::create([
                 'employee_id' => $employee->id,
                 'date' => date('Y-m-d'),
                 'check_in' => now(),
                 'status' => 'hadir',
             ]);
-            return response()->json($attendance, 201);
+            return redirect()->back()->with('success', 'Check-in berhasil.');
     }
 
     /**
@@ -77,24 +75,18 @@ class AttendanceController extends Controller
         ->first();
 
         if (!$attendance) {
-            return response()->json([
-                'message' => 'Anda belum check-in hari ini.'
-            ], 400);
+            return redirect()->back()->withErrors(['message' => 'Anda belum check-in hari ini.']);
         }
 
         if ($attendance->check_out) {
-            return response()->json([
-                'message' => 'Anda sudah check-out hari ini.'
-            ], 400);
+            return redirect()->back()->withErrors(['message' => 'Anda sudah check-out hari ini.']);
         }
 
         $attendance->update([
             'check_out' => now(),
         ]);
 
-        return response()->json([
-            'message' => 'Check-out berhasil',
-        ]);
+        return redirect()->back()->with('success', 'Check-out berhasil.');
     }
 
     /**
@@ -115,9 +107,7 @@ class AttendanceController extends Controller
             ->first();
 
         if ($existing) {
-            return response()->json([
-                'message' => 'Anda sudah memiliki absensi hari ini.'
-            ], 400);
+            return redirect()->back()->withErrors(['message' => 'Anda sudah memiliki absensi hari ini.']);
         }
 
         $path = null;
@@ -125,17 +115,14 @@ class AttendanceController extends Controller
             $path = $request->file('proof_file')->store('proofs', 'public');
         }
 
-        $attendance = Attendance::create([
+        Attendance::create([
             'employee_id' => $employee->id,
             'date' => date('Y-m-d'),
             'status' => $validated['status'],
             'proof_file' => $path,
         ]);
 
-        return response()->json([
-            'message' => 'Pengajuan berhasil',
-            'data' => $attendance,
-        ]);
+        return redirect()->back()->with('success', 'Pengajuan berhasil');
     }
 
     /**

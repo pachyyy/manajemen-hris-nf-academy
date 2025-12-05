@@ -184,7 +184,10 @@ class TaskController extends Controller
             $validated['attachment'] = $request->file('attachment')->store('task-attachments', 'public');
         }
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        // Dispatch the event for notification
+        event(new \App\Events\TaskAssigned($task));
 
         return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }

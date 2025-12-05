@@ -9,8 +9,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { BreadcrumbItem, PageProps } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 interface Doc {
@@ -23,13 +23,7 @@ interface Employee {
     bank_account_number?: string;
 }
 
-interface EmployeeDocumentsProps {
-    employeeId: number;
-}
-
-export default function EmployeeDocuments({
-    employeeId,
-}: EmployeeDocumentsProps) {
+export default function StaffDocuments() {
     const [documents, setDocuments] = useState<Doc[]>([]);
     const [employee, setEmployee] = useState<Employee | null>(null);
     const [name, setName] = useState('');
@@ -39,17 +33,18 @@ export default function EmployeeDocuments({
     });
 
     const fetchDocs = async () => {
-        const res = await fetch(`/api/employees/${employeeId}/documents`, {
+        const res = await fetch(`/api/staff/documents`, {
             headers: {
                 Accept: 'application/json',
             },
         });
         const data = await res.json();
         setDocuments(Array.isArray(data) ? data : []);
+        // setDocuments(data);
     };
 
     const fetchEmployee = async () => {
-        const res = await fetch(`/api/employees/${employeeId}`, {
+        const res = await fetch(`/api/staff/employee`, {
             headers: {
                 Accept: 'application/json',
             },
@@ -67,7 +62,7 @@ export default function EmployeeDocuments({
             await fetchEmployee();
         };
         load();
-    }, [employeeId]);
+    }, []);
 
     const uploadDocument = async () => {
         if (!file || !name) return;
@@ -76,7 +71,7 @@ export default function EmployeeDocuments({
         formData.append('document', file);
         formData.append('name', name);
 
-        await fetch(`/api/employees/${employeeId}/documents`, {
+        await fetch(`/api/staff/documents`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN':
@@ -95,7 +90,7 @@ export default function EmployeeDocuments({
     };
 
     const deleteDocument = async (id: number) => {
-        await fetch(`/api/documents/${id}`, {
+        await fetch(`/api/staff/documents/${id}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN':
@@ -111,7 +106,7 @@ export default function EmployeeDocuments({
     };
 
     const updateBankAccount = async () => {
-        await fetch(`/api/employees/${employeeId}/bank-account`, {
+        await fetch(`/api/staff/bank-account`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN':
@@ -129,15 +124,14 @@ export default function EmployeeDocuments({
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Employees', href: '/dashboard/admin/employees' },
-        { title: 'Employee Documents', href: '/dashboard/admin/employees/documents' },
+        { title: 'Dokumen Pegawai', href: '#' },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title='Upload Documents' />
             <h1 className="mb-4 text-2xl font-bold">
-                Employee Documents & Bank Details
+                My Documents & Bank Details
             </h1>
 
             {employee?.bank_account_number ? (
@@ -231,7 +225,7 @@ export default function EmployeeDocuments({
                                 className="flex items-center justify-between border-b pb-2"
                             >
                                 <a
-                                    href={`/documents/${doc.id}`}
+                                    href={`/staff/documents/${doc.id}`}
                                     target='_blank'
                                     className="text-blue-600 underline uppercase"
                                 >

@@ -97,15 +97,15 @@ export default function AddEmployee() {
     const divClassname = 'flex flex-col gap-2';
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Employees', href: '/dashboard/admin/employees' },
-        { title: 'Add Employee', href: '/dashboard/admin/employees/add' },
+        { title: 'Pegawai', href: '/employees' },
+        { title: 'Tambah Pegawai', href: '/employees/add' },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
                 <h3 className="text-xl leading-6 font-bold text-gray-900 dark:text-white">
-                    Add New Employee
+                    Tambah Pegawai Baru
                 </h3>
                 <div className="mt-2">
                     <form onSubmit={handleSubmit} className="w-2xl space-y-4">

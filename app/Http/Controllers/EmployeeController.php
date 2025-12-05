@@ -19,7 +19,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return response()->json(Employee::all());
+        return response()->json(Employee::with('user')->get());
     }
 
     /**
@@ -223,6 +223,76 @@ class EmployeeController extends Controller
     public function updateBankAccount(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);
+
+        $validated = $request->validate([
+            'bank_account_number' => 'required|string',
+        ]);
+
+        $updateData = [
+            'bank_name' => 'BCA', // Hardcode the bank name
+            'bank_account_number' => $validated['bank_account_number'],
+        ];
+
+        $employee->update($updateData);
+
+        return response()->json($employee);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Staff-specific methods
+    |--------------------------------------------------------------------------
+    */
+    private function getAuthEmployee() {
+        $user = auth()->user();
+        return Employee::where('user_id', $user->id)->firstOrFail();
+    }
+
+    public function getStaffEmployee()
+    {
+        return response()->json($this->getAuthEmployee());
+    }
+
+    public function getStaffDocuments()
+    {
+        $employee = $this->getAuthEmployee();
+        return response()->json($employee->documents);
+    }
+
+    public function uploadStaffDocument(Request $request)
+    {
+        $employee = $this->getAuthEmployee();
+
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'name' => 'required|string',
+        ]);
+
+        $path = $request->file('document')->store('employee-documents', 'public');
+
+        EmployeeDocument::create([
+            'employee_id' => $employee->id,
+            'name' => $request->name,
+            'file_path' => $path,
+        ]);
+
+        return response()->json(['message' => 'Document uploaded successfully',]);
+    }
+
+    public function deleteStaffDocument(Request $request, $id)
+    {
+        $employee = $this->getAuthEmployee();
+        $doc = EmployeeDocument::where('employee_id', $employee->id)->where('id', $id)->firstOrFail();
+
+        Storage::disk('public')->delete($doc->file_path);
+
+        $doc->delete();
+        return response()->json(['message' => 'Document deleted']);
+    }
+
+    public function updateStaffBankAccount(Request $request)
+    {
+        $employee = $this->getAuthEmployee();
 
         $validated = $request->validate([
             'bank_account_number' => 'required|string',

@@ -5,17 +5,18 @@ import { Head } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Admin Dashboard',
-        href: '/dashboard/admin',
+        title: 'Staff Dashboard',
+        href: '/dashboard/staff',
     },
 ];
 
-export default function AdminDashboard() {
+export default function StaffDashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Admin Dashboard" />
+            <Head title="Staff Dashboard" />
             <div className='p-2'>
-                <h1 className='text-3xl font-bold'>Admin Dashboard</h1>
+                <h1 className='text-3xl font-bold'>Staff Dashboard</h1>
+                {/* Add more staff-specific content here */}
             </div>
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">

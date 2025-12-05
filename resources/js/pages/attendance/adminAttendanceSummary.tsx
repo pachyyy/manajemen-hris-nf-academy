@@ -51,7 +51,7 @@ export default function AdminAttendanceSummary() {
     if (error) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
-                <Head title="Attendance Summary" />
+                <Head title="Ringkasan Kehadiran" />
                 <p>{error}</p>
             </AppLayout>
         );
@@ -61,9 +61,9 @@ export default function AdminAttendanceSummary() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Attendance Summary" />
-            <div>
-                <h1 className="text-2xl font-bold mb-4">Attendance Summary</h1>
+            <Head title="Ringkasan Kehadiran" />
+            <div className="p-2">
+                <h1 className="text-2xl font-bold mb-4">Ringkasan Kehadiran</h1>
 
                 <div className="grid grid-cols-3 gap-4">
                     <div className="p-4 rounded bg-white shadow">

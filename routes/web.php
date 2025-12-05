@@ -21,57 +21,60 @@ Route::get('/', function () {
 // })->name('test');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard/admin', function () {
-        return Inertia::render('admin-dashboard');
+    // Dashboard for admin and user
+    Route::get('dashboard', function () {
+        return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('dashboard/admin/roles', function() {
+
+    // Admin for viewing and adding roles
+    Route::get('roles', function() {
         return Inertia::render(component: 'roles/showRoles');
-    })->middleware('admin')->name('dashboard.roles');
+    })->middleware('hr.or.admin')->name('dashboard.roles');
 
     // employee routing
-    Route::get('dashboard/admin/employees', function() {
+    Route::get('employees', function() {
         return Inertia::render(component: 'admin/showEmployees');
-    })->middleware('admin')->name('dashboard.employees');
+    })->middleware('hr.or.admin')->name('dashboard.employees');
 
-    Route::get('dashboard/admin/employees/add', function() {
+    Route::get('employees/add', function() {
         return Inertia::render(component: 'admin/addEmployee');
-    })->middleware('admin')->name('dashboard.employees.add');
+    })->middleware('hr.or.admin')->name('dashboard.employees.add');
 
-    Route::get('dashboard/admin/employees/update/{id}', function($id) {
+    Route::get('employees/update/{id}', function($id) {
         return Inertia::render('admin/updateEmployee', [
             'id' => $id,
         ]);
-    })->middleware('admin')->name('dashboard.employees.update');
+    })->middleware('hr.or.admin')->name('dashboard.employees.update');
 
-    Route::get('dashboard/admin/employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('admin')->name('dashboard.employees.account');
+    Route::get('employees/account/{id}', [EmployeeController::class, 'showAccount'])->middleware('hr.or.admin')->name('dashboard.employees.account');
 
-    Route::get('dashboard/admin/employees/{id}/documents', function($id) {
+    Route::get('employees/{id}/documents', function($id) {
         return Inertia::render('admin/employeeDocuments', [
             'employeeId' => $id,
         ]);
-    })->middleware('admin')->name('dashboard.employees.documents');
+    })->middleware('hr.or.admin')->name('dashboard.employees.documents');
 
-    Route::get('documents/{document}', [EmployeeController::class, 'serveDocument'])->middleware('admin')->name('documents.serve');
+    // Route dokumen
+    Route::get('documents/{document}', [EmployeeController::class, 'serveDocument'])->middleware('hr.or.admin')->name('documents.serve');
 
-    Route::get('dashboard/employee/attendance', function () {
+    Route::get('employee-documents/{document}', function () {
+        return Inertia::render('documents/staffDocuments');
+    })->name('documents.employee');
+
+    Route::get('employee-attendance', function () {
         return Inertia::render('attendance/staffAttendance');
     })->name('dashboard.attendance');
 
-    Route::get('dashboard/admin/attendance', function () {
+    Route::get('attendance', function () {
         return Inertia::render('attendance/adminAttendance');
-    })->middleware('admin')->name('attendance.admin');
+    })->middleware('hr.or.admin')->name('attendance.admin');
 
-    Route::get('dashboard/admin/attendance/summary', function () {
+    Route::get('attendance/summary', function () {
         return Inertia::render('attendance/adminAttendanceSummary');
-    })->middleware('admin')->name('attendance.admin.summary');
+    })->middleware('hr.or.admin')->name('attendance.admin.summary');
 
     // ===== Task Management =====
-    // Route::get('dashboard/admin/task', [TaskController::class, 'index'])->name('task');
-    Route::get('dashboard/admin/tasks', function () {
-        return Inertia::render('tasks/Index');
-    })->middleware('admin')->name('tasks.admin');
-
     Route::prefix('tasks')->group(function () {
         // Routes only for Admin and HR
         Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
@@ -174,6 +177,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('laporan', function () {
         return Inertia::render('laporan');
     })->name('laporan');
+
+    Route::get('messages', function () {
+        return Inertia::render('messages/index');
+    })->name('messages.index');
 });
 
 require __DIR__ . '/settings.php';
