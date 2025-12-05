@@ -4,7 +4,7 @@ services:
     name: nf-academy-hris # Or your preferred app name
     env: php
     plan: free # Or your preferred paid plan
-    buildCommand: |
+    buildCommand:
     # Install PHP and Node dependencies
     composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
     npm install
