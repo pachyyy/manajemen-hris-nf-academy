@@ -57,4 +57,10 @@ class MessageController extends Controller
         Message::where('user_id', Auth::id())->whereNull('read_at')->update(['read_at' => now()]);
         return response()->json(['message' => 'All messages marked as read']);
     }
+
+    public function unreadCount()
+    {
+        $count = Message::where('user_id', Auth::id())->whereNull('read_at')->count();
+        return response()->json(['count' => $count]);
+    }
 }

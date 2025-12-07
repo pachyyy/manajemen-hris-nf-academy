@@ -85,7 +85,9 @@ export default function StaffAttendance() {
             setCurrentUser(data.user);
         } catch (err: unknown) {
             console.error('Failed to fetch attendance data:', err);
-            setError((err as Error).message || 'Failed to load attendance data.');
+            setError(
+                (err as Error).message || 'Failed to load attendance data.',
+            );
         } finally {
             setIsLoading(false);
         }
@@ -160,10 +162,19 @@ export default function StaffAttendance() {
 
             <div>
                 <h1 className="mb-4 text-2xl font-bold">Absensi Harian</h1>
-                <p className="mb-6 text-gray-600">
-                    Hai, <strong>{currentUser.name}</strong>. Silakan lakukan
-                    absen hari ini.
-                </p>
+                {!todayRecord?.check_in && (
+                    <p className="mb-6 text-gray-600">
+                        Hai, <strong>{currentUser.name}</strong>. Silakan
+                        lakukan absen hari ini.
+                    </p>
+                )}
+
+                {todayRecord?.check_in && !todayRecord?.check_out && (
+                    <p className="mb-6 text-gray-600">
+                        Hai, <strong>{currentUser.name}</strong>. Jangan lupa
+                        untuk checkout nanti!
+                    </p>
+                )}
 
                 {/* CHECK IN / CHECK OUT BUTTONS */}
                 <div className="mb-8 flex gap-3">
@@ -213,14 +224,6 @@ export default function StaffAttendance() {
                             <Label className="mb-1 block font-medium">
                                 Upload Bukti (opsional)
                             </Label>
-                            {/* <input
-                                type="file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={(e) =>
-                                    setProofFile(e.target.files?.[0] || null)
-                                }
-                                className="w-full rounded border p-2 dark:bg-neutral-700"
-                            /> */}
                             <Input
                                 id="proofFile"
                                 type="file"

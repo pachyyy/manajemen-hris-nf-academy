@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, PageProps } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { BreadcrumbItem } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,8 +34,8 @@ export default function AdminMessages() {
                 // We need an endpoint to get all staff users
                 const response = await fetch('/api/employees');
                 if (response.ok) {
-                    const employees = await response.json();
-                    const staffUsers = employees.map((emp: any) => emp.user).filter(Boolean);
+                    const employees: { user: User | null }[] = await response.json();
+                    const staffUsers = employees.map((emp) => emp.user).filter(Boolean) as User[];
                     setUsers(staffUsers);
                 }
             } catch (error) {

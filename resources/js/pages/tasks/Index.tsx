@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Link, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { FilterIcon, MoreHorizontalIcon, PlusIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -175,10 +175,11 @@ export default function TaskIndex({
     const applyFilters = () => {
         // Remove empty values
         const cleanedFilters = Object.fromEntries(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             Object.entries(filterData).filter(([_, value]) => value !== ''),
         );
 
-        router.get('/tasks', cleanedFilters as any, {
+        router.get('/tasks', cleanedFilters as Record<string, string>, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -195,7 +196,7 @@ export default function TaskIndex({
             sort_by: 'created_at',
             sort_order: 'desc',
         });
-        router.get('/tasks', {} as any, {
+        router.get('/tasks', {} as Record<string, string>, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -224,12 +225,13 @@ export default function TaskIndex({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title='Penugasan' />
             <div className="space-y-4">
                 <div className="flex items-center justify-between p-2">
                     <div>
-                        <h1 className="text-3xl font-bold">Task Management</h1>
+                        <h1 className="text-3xl font-bold">Penugasan</h1>
                         <p className="text-muted-foreground">
-                            Manage and track your tasks
+                            Atur dan lacak tugas pegawai
                         </p>
                     </div>
                     <div className="flex gap-2">

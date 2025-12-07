@@ -64,7 +64,7 @@ interface ShowProps {
     evaluations: Evaluation[];
 }
 
-export default function Show({ period, totalEmployees, evaluationStats, evaluations }: ShowProps) {
+export default function Show({ period, evaluationStats, evaluations }: ShowProps) {
     const [showCriteriaForm, setShowCriteriaForm] = useState(false);
     const { data, setData, post, reset, processing } = useForm({
         title: '',

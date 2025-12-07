@@ -48,7 +48,7 @@ export default function SelfAssessmentForm({ evaluation }: SelfAssessmentFormPro
         { title: 'Self Assessment', href: '#' },
     ];
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing } = useForm({
         answers: evaluation.answers.map((answer) => ({
             id: answer.id,
             self_score: answer.self_score || 0,
@@ -56,7 +56,7 @@ export default function SelfAssessmentForm({ evaluation }: SelfAssessmentFormPro
         })),
     });
 
-    const updateAnswer = (index: number, field: string, value: any) => {
+    const updateAnswer = (index: number, field: string, value: string | number) => {
         const newAnswers = [...data.answers];
         newAnswers[index] = { ...newAnswers[index], [field]: value };
         setData('answers', newAnswers);

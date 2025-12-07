@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeProps } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
     Table,
@@ -32,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Index({ evaluations }: IndexProps) {
     const getStatusBadge = (status: string) => {
-        const variants: Record<string, any> = {
+        const variants: Record<string, BadgeProps['variant']> = {
             pending: 'secondary',
             submitted: 'default',
             reviewed: 'outline',

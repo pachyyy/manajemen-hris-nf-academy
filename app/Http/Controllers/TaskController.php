@@ -360,4 +360,31 @@ class TaskController extends Controller
 
         return response()->json($tasks);
     }
+
+    /**
+     * Get unfinished tasks for API.
+     */
+    public function getUnfinishedTasks()
+    {
+        $tasks = Task::with('assignedTo:id,name')
+            ->where('status', '!=', 'selesai')
+            ->orderBy('deadline', 'asc')
+            ->get();
+
+        return response()->json($tasks);
+    }
+
+    /**
+     * Get unfinished tasks for the authenticated staff user.
+     */
+    public function getStaffUnfinishedTasks()
+    {
+        $tasks = Task::with('assignedTo:id,name')
+            ->where('assigned_to', Auth::id())
+            ->where('status', '!=', 'selesai')
+            ->orderBy('deadline', 'asc')
+            ->get();
+
+        return response()->json($tasks);
+    }
 }

@@ -124,7 +124,7 @@ export default function CreatePenilaianKerja({ defaultCriteria }: CreatePenilaia
             is_default: true,
         }));
         setData('indicators', initialIndicators);
-    }, []);
+    }, [defaultCriteria, setData]);
 
     const handleAddIndicator = () => {
         if (!indicatorForm.title.trim()) {

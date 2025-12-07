@@ -1,6 +1,14 @@
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Popover,
@@ -60,6 +68,9 @@ export default function AdminAttendance() {
     const [error, setError] = useState<string | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
+    const [maxTime, setMaxTime] = useState('09:00');
+    const [timeError, setTimeError] = useState<string | null>(null);
     const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 7);
@@ -97,8 +108,30 @@ export default function AdminAttendance() {
         }
     };
 
+    const fetchMaxTime = async () => {
+        try {
+            const res = await fetch('/api/settings/max-attendance-time', {
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content ?? '',
+                },
+            });
+            if (!res.ok) throw new Error('Failed to fetch max time');
+            const data = await res.json();
+            setMaxTime(data.time);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
         fetchRecords();
+        fetchMaxTime();
     }, []);
 
     // Handle Delete
@@ -160,11 +193,45 @@ export default function AdminAttendance() {
         }
     };
 
+    const handleSaveMaxTime = async () => {
+        try {
+            const res = await fetch('/api/settings/max-attendance-time', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content ?? '',
+                },
+                body: JSON.stringify({ time: maxTime }),
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(
+                    errorData.message || 'Failed to save max time',
+                );
+            }
+            setTimeError(null);
+            setIsTimeDialogOpen(false);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setTimeError(err.message);
+            } else {
+                setTimeError('An unknown error occurred');
+            }
+            console.error(err);
+        }
+    };
+
     // UI
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Daftar Kehadiran" />
-            <div className='p-2'>
+            <div className="p-2">
                 <h1 className="mb-4 text-2xl font-bold">Daftar Kehadiran</h1>
 
                 {/*  Date filter  */}
@@ -249,9 +316,55 @@ export default function AdminAttendance() {
 
                     <div className="flex items-end justify-center gap-3">
                         <Button onClick={applyFilter}>Apply Filter</Button>
-                        <Link href='/attendance/summary'>
+                        <Link href="/attendance/summary">
                             <Button>Attendance Summary</Button>
                         </Link>
+                        <Dialog
+                            open={isTimeDialogOpen}
+                            onOpenChange={setIsTimeDialogOpen}
+                        >
+                            <DialogTrigger asChild>
+                                <Button>Atur Waktu Kehadiran</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        Atur Waktu Maksimal Kehadiran
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <div className="py-4">
+                                    <Label htmlFor="maxTime">
+                                        Waktu Maksimal (HH:mm)
+                                    </Label>
+                                    <Input
+                                        id="maxTime"
+                                        type="time"
+                                        value={maxTime}
+                                        onChange={(e) =>
+                                            setMaxTime(e.target.value)
+                                        }
+                                    />
+                                    {timeError && (
+                                        <p className="mt-2 text-sm text-red-500">
+                                            {timeError}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() =>
+                                            setIsTimeDialogOpen(false)
+                                        }
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button onClick={handleSaveMaxTime}>
+                                        Save
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
 

@@ -27,34 +27,34 @@ export default function EmployeeAccount() {
         employee.user?.role_id?.toString() || '',
     );
 
-    const fetchPassword = async () => {
-        try {
-            const response = await fetch(`/api/employees/account/${employee.user.id}/first-password`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN':
-                        (
-                            document.querySelector(
-                                'meta[name="csrf-token"]',
-                            ) as HTMLMetaElement
-                        )?.content || '',
-                },
-            });
-            const data = await response.json();
-            setDisplayPassword(data.first_password);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('An unknown error occurred.');
-            }
-        }
-    };
-
     useEffect(() => {
-        // const storedPassword = sessionStorage.getItem('generatedPassword');
+        const fetchPassword = async () => {
+            if (!employee.user) return;
+            try {
+                const response = await fetch(`/api/employees/account/${employee.user.id}/first-password`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN':
+                            (
+                                document.querySelector(
+                                    'meta[name="csrf-token"]',
+                                ) as HTMLMetaElement
+                            )?.content || '',
+                    },
+                });
+                const data = await response.json();
+                setDisplayPassword(data.first_password);
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('An unknown error occurred.');
+                }
+            }
+        };
+
         if (employee.user) {
             fetchPassword();
         }

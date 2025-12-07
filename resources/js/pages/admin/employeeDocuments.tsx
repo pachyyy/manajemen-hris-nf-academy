@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 interface Doc {
@@ -38,30 +38,30 @@ export default function EmployeeDocuments({
         bank_account_number: '',
     });
 
-    const fetchDocs = async () => {
-        const res = await fetch(`/api/employees/${employeeId}/documents`, {
-            headers: {
-                Accept: 'application/json',
-            },
-        });
-        const data = await res.json();
-        setDocuments(Array.isArray(data) ? data : []);
-    };
-
-    const fetchEmployee = async () => {
-        const res = await fetch(`/api/employees/${employeeId}`, {
-            headers: {
-                Accept: 'application/json',
-            },
-        });
-        const data = await res.json();
-        setEmployee(data);
-        setBankDetails({
-            bank_account_number: data.bank_account_number || '',
-        });
-    };
-
     useEffect(() => {
+        const fetchDocs = async () => {
+            const res = await fetch(`/api/employees/${employeeId}/documents`, {
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+            const data = await res.json();
+            setDocuments(Array.isArray(data) ? data : []);
+        };
+
+        const fetchEmployee = async () => {
+            const res = await fetch(`/api/employees/${employeeId}`, {
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+            const data = await res.json();
+            setEmployee(data);
+            setBankDetails({
+                bank_account_number: data.bank_account_number || '',
+            });
+        };
+
         const load = async () => {
             await fetchDocs();
             await fetchEmployee();
@@ -91,7 +91,14 @@ export default function EmployeeDocuments({
 
         setName('');
         setFile(null);
-        await fetchDocs();
+        
+        const res = await fetch(`/api/employees/${employeeId}/documents`, {
+            headers: {
+                Accept: 'application/json',
+            },
+        });
+        const data = await res.json();
+        setDocuments(Array.isArray(data) ? data : []);
     };
 
     const deleteDocument = async (id: number) => {
@@ -129,8 +136,8 @@ export default function EmployeeDocuments({
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Employees', href: '/dashboard/admin/employees' },
-        { title: 'Employee Documents', href: '/dashboard/admin/employees/documents' },
+        { title: 'Employees', href: '/employees' },
+        { title: 'Employee Documents', href: '/employees/documents' },
     ];
 
     return (
