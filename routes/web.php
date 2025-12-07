@@ -57,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route dokumen
     Route::get('documents/{document}', [EmployeeController::class, 'serveDocument'])->middleware('hr.or.admin')->name('documents.serve');
+    Route::get('staff/documents/{document}', [EmployeeController::class, 'serveStaffDocument'])->middleware('auth')->name('staff.documents.serve');
 
     Route::get('employee-documents/{document}', function () {
         return Inertia::render('documents/staffDocuments');

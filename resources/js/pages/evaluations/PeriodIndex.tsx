@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -27,7 +27,6 @@ interface Period {
 
 interface PeriodIndexProps {
     periods: Period[];
-    filters?: any;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -36,7 +35,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Index({ periods }: PeriodIndexProps) {
     const getStatusBadge = (status: string) => {
-        const variants: Record<string, any> = {
+        const variants: Record<string, BadgeProps['variant']> = {
             draft: 'secondary',
             active: 'default',
             closed: 'outline',

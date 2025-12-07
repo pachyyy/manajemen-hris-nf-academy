@@ -20,19 +20,19 @@ interface Message {
 export default function StaffMessages() {
     const [messages, setMessages] = useState<Message[]>([]);
 
-    const fetchMessages = async () => {
-        try {
-            const response = await fetch('/api/messages');
-            if (response.ok) {
-                const data = await response.json();
-                setMessages(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch messages:', error);
-        }
-    };
-
     useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch('/api/messages');
+                if (response.ok) {
+                    const data = await response.json();
+                    setMessages(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch messages:', error);
+            }
+        };
+
         fetchMessages();
     }, []);
 
@@ -49,7 +49,12 @@ export default function StaffMessages() {
                     )?.content || '',
                 }
             });
-            fetchMessages(); // Refresh messages
+            
+            const response = await fetch('/api/messages');
+            if (response.ok) {
+                const data = await response.json();
+                setMessages(data);
+            }
         } catch (error) {
             console.error('Failed to mark message as read:', error);
         }
@@ -68,7 +73,12 @@ export default function StaffMessages() {
                     )?.content || '',
                 }
             });
-            fetchMessages(); // Refresh messages
+            
+            const response = await fetch('/api/messages');
+            if (response.ok) {
+                const data = await response.json();
+                setMessages(data);
+            }
         } catch (error) {
             console.error('Failed to mark all messages as read:', error);
         }

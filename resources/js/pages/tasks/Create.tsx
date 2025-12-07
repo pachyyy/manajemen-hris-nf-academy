@@ -97,7 +97,7 @@ export default function CreateTask({ staffUsers, divisions }: CreateTaskProps) {
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-2">
                                 <Label htmlFor="description">
                                     Description{' '}
                                     <span className="text-destructive">*</span>

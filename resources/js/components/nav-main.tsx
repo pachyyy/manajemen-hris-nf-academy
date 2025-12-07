@@ -4,6 +4,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarMenuBadge, // Import SidebarMenuBadge
 } from '@/components/ui/sidebar';
 import { resolveUrl } from '@/lib/utils';
 import { type NavItem } from '@/types';
@@ -24,9 +25,14 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             )}
                             tooltip={{ children: item.title }}
                         >
-                            <Link href={item.href} prefetch>
+                            <Link href={item.href} prefetch className="flex items-center">
                                 {item.icon && <item.icon />}
                                 <span>{item.title}</span>
+                                {item.notificationCount && item.notificationCount > 0 && (
+                                    <SidebarMenuBadge className="ml-auto">
+                                        {item.notificationCount}
+                                    </SidebarMenuBadge>
+                                )}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

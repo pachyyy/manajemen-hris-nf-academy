@@ -243,7 +243,7 @@ export default function ShowTask({ task, canManage }: ShowTaskProps) {
                                         <Select
                                             value={data.status}
                                             onValueChange={(value) =>
-                                                setData('status', value as any)
+                                                setData('status', value as 'belum' | 'proses' | 'selesai')
                                             }
                                         >
                                             <SelectTrigger>

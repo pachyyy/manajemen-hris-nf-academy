@@ -9,8 +9,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, PageProps } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 interface Doc {
@@ -238,6 +238,7 @@ export default function StaffDocuments() {
                                 >
                                     Delete
                                 </Button>
+
                             </li>
                         ))}
                     </ul>

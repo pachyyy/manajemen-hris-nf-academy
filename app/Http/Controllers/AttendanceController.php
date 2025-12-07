@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -43,7 +44,10 @@ class AttendanceController extends Controller
     public function checkIn(Request $request) {
         $user = Auth::user();
 
-        $employee = Employee::where('user_id', $user->id)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id)->first();
+        if (!$employee) {
+            return redirect()->back()->withErrors(['message' => 'Employee record not found.']);
+        }
 
         // Cegah double check-in pada hari yg sama
         $existing = Attendance::where('employee_id', $employee->id)
@@ -54,11 +58,15 @@ class AttendanceController extends Controller
                 return redirect()->back()->withErrors(['message' => 'Anda sudah melakukan check-in hari ini.']);
             }
 
+            $maxTimeSetting = Setting::find('max_attendance_time');
+            $maxTime = $maxTimeSetting ? $maxTimeSetting->value : '09:00';
+            $status = now()->format('H:i') > $maxTime ? 'terlambat' : 'hadir';
+
             Attendance::create([
                 'employee_id' => $employee->id,
                 'date' => date('Y-m-d'),
                 'check_in' => now(),
-                'status' => 'hadir',
+                'status' => $status,
             ]);
             return redirect()->back()->with('success', 'Check-in berhasil.');
     }
@@ -68,7 +76,10 @@ class AttendanceController extends Controller
      */
     public function checkOut(Request $request) {
         $user = Auth::user();
-        $employee = Employee::where('user_id', $user->id)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id)->first();
+        if (!$employee) {
+            return redirect()->back()->withErrors(['message' => 'Employee record not found.']);
+        }
 
         $attendance = Attendance::where('employee_id', $employee->id)
         ->where('date', date('Y-m-d'))
@@ -94,7 +105,10 @@ class AttendanceController extends Controller
      */
     public function requestLeave(Request $request) {
         $user = Auth::user();
-        $employee = Employee::where('user_id', $user->id)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id)->first();
+        if (!$employee) {
+            return redirect()->back()->withErrors(['message' => 'Employee record not found.']);
+        }
 
         $validated = $request->validate([
             'status' => 'required|in:izin,sakit,cuti',
@@ -155,7 +169,8 @@ class AttendanceController extends Controller
                 SUM(status = 'izin') as izin,
                 SUM(status = 'sakit') as sakit,
                 SUM(status = 'cuti') as cuti,
-                SUM(status = 'alpha') as alpha
+                SUM(status = 'alpha') as alpha,
+                SUM(status = 'terlambat') as terlambat
             ")
             ->first();
 
@@ -190,7 +205,8 @@ class AttendanceController extends Controller
             'izin' => Attendance::where('date', $today)->where('status', 'izin')->count(),
             'sakit' => Attendance::where('date', $today)->where('status', 'sakit')->count(),
             'cuti' => Attendance::where('date', $today)->where('status', 'cuti')->count(),
-            'alpha' => Attendance::where('date', $today)->where('status', 'alpha')->count(),
+            'alpha' => Attendance::where('date', '=', $today)->where('status', 'alpha')->count(),
+            'terlambat' => Attendance::where('date', $today)->where('status', 'terlambat')->count(),
         ];
 
         return Inertia::render('attendance/adminAttendanceSummary', [
@@ -202,28 +218,21 @@ class AttendanceController extends Controller
         ]);
     }
 
-    // Filter berdasarkan tanggal dan divisi untuk laporan absensi admin
-    public function filter(Request $request) {
+    /**
+     * Check if employee has submitted attendance today.
+     */
+    public function checkTodayAttendance() {
+        $user = Auth::user();
+        $employee = Employee::where('user_id', $user->id)->first();
 
-        $request->validate([
-            'date' => 'nullable|date',
-            'division' => 'nullable|string'
-        ]);
-
-        $query = Attendance::with('employee');
-
-        // Filter tanggal
-        if ($request->date) {
-            $query->where('date', $request->date);
+        if (!$employee) {
+            return response()->json(['hasAttended' => false]);
         }
 
-        // Filter divisi
-        if ($request->division) {
-            $query->whereHas('employee', function ($q) use ($request) {
-                $q->where('division', $request->division);
-            });
-        }
+        $hasAttended = Attendance::where('employee_id', $employee->id)
+            ->where('date', date('Y-m-d'))
+            ->exists();
 
-        return response()->json($query->orderBy('date', 'desc')->get());
+        return response()->json(['hasAttended' => $hasAttended]);
     }
 }

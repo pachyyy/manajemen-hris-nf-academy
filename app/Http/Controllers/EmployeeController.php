@@ -268,7 +268,7 @@ class EmployeeController extends Controller
             'name' => 'required|string',
         ]);
 
-        $path = $request->file('document')->store('employee-documents', 'public');
+        $path = $request->file('document')->store('private/employee-documents');
 
         EmployeeDocument::create([
             'employee_id' => $employee->id,
@@ -277,6 +277,21 @@ class EmployeeController extends Controller
         ]);
 
         return response()->json(['message' => 'Document uploaded successfully',]);
+    }
+
+    public function serveStaffDocument(EmployeeDocument $document)
+    {
+        $employee = $this->getAuthEmployee();
+
+        if ($document->employee_id !== $employee->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        if (!Storage::exists($document->file_path)) {
+            abort(404, 'Document not found.');
+        }
+
+        return Storage::response($document->file_path);
     }
 
     public function deleteStaffDocument(Request $request, $id)

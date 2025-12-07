@@ -35,9 +35,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('attendance/check-in', [AttendanceController::class, 'CheckIn']);
     Route::post('attendance/check-out', [AttendanceController::class, 'CheckOut']);
     Route::post('attendance/request-leave', [AttendanceController::class, 'requestLeave']);
+    Route::get('attendance/today-status', [\App\Http\Controllers\AttendanceController::class, 'checkTodayAttendance']);
 
     // Task Management API
     Route::get('tasks', [\App\Http\Controllers\TaskController::class, 'getTasksData']);
+    Route::get('tasks/unfinished', [\App\Http\Controllers\TaskController::class, 'getUnfinishedTasks']);
+    Route::get('staff/unfinished-tasks', [\App\Http\Controllers\TaskController::class, 'getStaffUnfinishedTasks']);
 
      // Evaluation Period Management API (Admin/HR only)
     Route::prefix('evaluation-periods')->middleware('hr.or.admin')->group(function () {
@@ -85,8 +88,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Message routes
     Route::get('/messages', [\App\Http\Controllers\MessageController::class, 'index']);
+    Route::get('/messages/unread-count', [\App\Http\Controllers\MessageController::class, 'unreadCount']);
     Route::put('/messages/{message}/read', [\App\Http\Controllers\MessageController::class, 'markAsRead']);
     Route::put('/messages/read-all', [\App\Http\Controllers\MessageController::class, 'markAllAsRead']);
     Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])->middleware('hr.or.admin');
 
+    // Settings routes
+    Route::get('/settings/max-attendance-time', [\App\Http\Controllers\SettingsController::class, 'getMaximumAttendanceTime'])->middleware('hr.or.admin');
+    Route::post('/settings/max-attendance-time', [\App\Http\Controllers\SettingsController::class, 'updateMaximumAttendanceTime'])->middleware('hr.or.admin');
 });

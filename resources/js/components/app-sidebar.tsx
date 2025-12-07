@@ -24,7 +24,7 @@ import AppLogo from './app-logo';
 // --- Navigation Items for Each Role ---
 
 // For 'Admin HR' role
-const adminNavItems: NavItem[] = [
+const getAdminNavItems = (notificationCount: number): NavItem[] => [
     {
         title: 'Pegawai',
         href: '/employees',
@@ -64,11 +64,12 @@ const adminNavItems: NavItem[] = [
         title: 'Pesan',
         href: '/messages',
         icon: Mail,
+        notificationCount,
     },
 ];
 
 // For a potential 'HR' role (template)
-const hrNavItems: NavItem[] = [
+const getHrNavItems = (notificationCount: number): NavItem[] => [
     {
         title: 'Pegawai',
         href: '/employees',
@@ -98,17 +99,18 @@ const hrNavItems: NavItem[] = [
         title: 'Pesan',
         href: '/messages',
         icon: Mail,
+        notificationCount,
     },
 ];
 
 // Function to get the appropriate navigation items based on user role
-const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
+const getNavItems = (roleName: string | undefined, userID: number | undefined, notificationCount: number): NavItem[] => {
     switch (roleName) {
         case 'Admin':
-            return adminNavItems;
+            return getAdminNavItems(notificationCount);
         case 'Human Resource': // Example for a future HR role
-            return hrNavItems;
-        default:
+            return getHrNavItems(notificationCount);
+        default: {
             const dynamicEmployeeNavItems: NavItem[] = [
                 {
                     title: 'Kehadiran',
@@ -118,6 +120,11 @@ const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
                 {
                     title: 'Penugasan',
                     href: '/tasks',
+                    icon: ClipboardList,
+                },
+                {
+                    title: 'Evaluasi Kerja',
+                    href: '/evaluasiKerja',
                     icon: ClipboardList,
                 },
 
@@ -130,6 +137,7 @@ const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
                     title: 'Pesan',
                     href: '/messages',
                     icon: Mail,
+                    notificationCount,
                 },
             ];
 
@@ -141,14 +149,15 @@ const getNavItems = (roleName?: string, userID?: number): NavItem[] => {
                 });
             }
             return dynamicEmployeeNavItems; // Default for employees and other roles
+        }
     }
 };
 
-export function AppSidebar() {
+export function AppSidebar({ notificationCount = 0 }: { notificationCount?: number }) {
     const { auth } = usePage<PageProps>().props;
     const userID = auth.user?.id
     const userRole = auth.user?.role?.name;
-    const mainNavItems = getNavItems(userRole, userID);
+    const mainNavItems = getNavItems(userRole, userID, notificationCount);
 
     return (
         <Sidebar collapsible="icon" variant="floating">
