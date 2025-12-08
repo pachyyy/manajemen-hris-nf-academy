@@ -96,4 +96,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Settings routes
     Route::get('/settings/max-attendance-time', [\App\Http\Controllers\SettingsController::class, 'getMaximumAttendanceTime'])->middleware('hr.or.admin');
     Route::post('/settings/max-attendance-time', [\App\Http\Controllers\SettingsController::class, 'updateMaximumAttendanceTime'])->middleware('hr.or.admin');
+
+    Route::prefix('laporan')->middleware('auth')->group(function () {
+        Route::get('admin', [\App\Http\Controllers\LaporanController::class, 'indexAdmin'])->middleware('hr.or.admin');
+        Route::get('staff', [\App\Http\Controllers\LaporanController::class, 'indexStaff']);
+        Route::post('/', [\App\Http\Controllers\LaporanController::class, 'store']);
+        Route::get('{laporan}', [\App\Http\Controllers\LaporanController::class, 'show']);
+        Route::put('{laporan}', [\App\Http\Controllers\LaporanController::class, 'update']);
+        Route::delete('{laporan}', [\App\Http\Controllers\LaporanController::class, 'destroy']);
+        Route::post('{laporan}/accept', [\App\Http\Controllers\LaporanController::class, 'accept'])->middleware('hr.or.admin');
+        Route::post('{laporan}/decline', [\App\Http\Controllers\LaporanController::class, 'decline'])->middleware('hr.or.admin');
+    });
 });
