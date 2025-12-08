@@ -93,6 +93,46 @@ export default function LaporanAdmin() {
         }
     };
 
+    const handleExport = async () => {
+        try {
+            const response = await fetch('/api/laporan/export', {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content || '',
+                },
+                credentials: 'include',
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                const errorMsg = data.message || `HTTP error! status: ${response.status}`;
+                throw new Error(errorMsg);
+            }
+
+            if (data.download_url) {
+                const link = document.createElement('a');
+                link.href = data.download_url;
+                link.setAttribute('download', 'laporan.csv');
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setError(null); // Clear previous errors on success
+            } else {
+                setError('No download URL received.');
+            }
+        } catch (err: any) {
+            console.error('Failed to export laporan:', err);
+            setError(`Failed to export laporan: ${err.message}`);
+        }
+    };
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Laporan',
@@ -105,6 +145,9 @@ export default function LaporanAdmin() {
             <Head title='Laporan Management' />
             <div className="align-center flex p-3">
                 <h1 className="text-3xl font-bold">Laporan Management</h1>
+                <div className="absolute right-2 z-10">
+                    <Button className="cursor-pointer" onClick={handleExport}>Export to CSV</Button>
+                </div>
             </div>
 
             {error && (

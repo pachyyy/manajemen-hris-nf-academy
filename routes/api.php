@@ -100,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('laporan')->middleware('auth')->group(function () {
         Route::get('admin', [\App\Http\Controllers\LaporanController::class, 'indexAdmin'])->middleware('hr.or.admin');
         Route::get('staff', [\App\Http\Controllers\LaporanController::class, 'indexStaff']);
+        Route::get('export', [\App\Http\Controllers\LaporanController::class, 'export'])->middleware('hr.or.admin');
         Route::post('/', [\App\Http\Controllers\LaporanController::class, 'store']);
         Route::get('{laporan}', [\App\Http\Controllers\LaporanController::class, 'show']);
         Route::put('{laporan}', [\App\Http\Controllers\LaporanController::class, 'update']);
