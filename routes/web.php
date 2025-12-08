@@ -71,9 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('attendance/adminAttendance');
     })->middleware('hr.or.admin')->name('attendance.admin');
 
-    Route::get('attendance/summary', function () {
-        return Inertia::render('attendance/adminAttendanceSummary');
-    })->middleware('hr.or.admin')->name('attendance.admin.summary');
+    Route::get('attendance/summary', [\App\Http\Controllers\AttendanceController::class, 'summaryPage'])->middleware('hr.or.admin')->name('attendance.admin.summary');
 
     // ===== Task Management =====
     Route::prefix('tasks')->group(function () {
@@ -175,13 +173,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
 
     // ===== Laporan =====
-    Route::get('laporan', function () {
-        return Inertia::render('laporan');
-    })->name('laporan');
 
     Route::get('messages', function () {
         return Inertia::render('messages/index');
     })->name('messages.index');
+
+    Route::prefix('laporan')->middleware('auth')->group(function () {
+        Route::get('admin', function () {
+            return Inertia::render('admin/Laporan');
+        })->middleware('hr.or.admin')->name('laporan.admin');
+
+        Route::get('staff', function () {
+            return Inertia::render('staff/Laporan');
+        })->name('laporan.staff');
+
+        Route::get('create', function () {
+            return Inertia::render('staff/CreateLaporan');
+        })->name('laporan.create');
+
+        Route::get('update/{id}', function ($id) {
+            return Inertia::render('staff/UpdateLaporan', ['id' => $id]);
+        })->name('laporan.update');
+    });
 });
 
 require __DIR__ . '/settings.php';

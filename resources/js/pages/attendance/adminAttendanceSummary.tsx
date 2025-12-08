@@ -10,9 +10,10 @@ interface AttendanceSummary {
     sakit: number;
     cuti: number;
     alpha: number;
+    terlambat: number;
 }
 
-interface SummaryResponse {
+interface AdminAttendanceSummaryProps {
     today: string;
     summary: AttendanceSummary;
     totalEmployees: number;
@@ -20,8 +21,7 @@ interface SummaryResponse {
     notYetAbsented: number;
 }
 
-export default function AdminAttendanceSummary() {
-    const [data, setData] = useState<SummaryResponse | null>(null);
+export default function AdminAttendanceSummary({ today, summary, totalEmployees, alreadyAbsented, notYetAbsented }: AdminAttendanceSummaryProps) {
     const [error, setError] = useState<string | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -29,35 +29,7 @@ export default function AdminAttendanceSummary() {
         { title: 'Attendance Summary', href: '/dashboard/admin/attendance/summary' },
     ];
 
-    const fetchData = async () => {
-        try {
-            const response = await fetch('/api/attendance/summary');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const d = await response.json();
-            setData(d);
-        } catch (error) {
-            console.error('Failed to fetch!', error);
-            setError('Failed to fetch attendance summary.');
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-
-    if (error) {
-        return (
-            <AppLayout breadcrumbs={breadcrumbs}>
-                <Head title="Ringkasan Kehadiran" />
-                <p>{error}</p>
-            </AppLayout>
-        );
-    }
-
-    const s = data?.summary;
+    const s = summary;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -68,17 +40,17 @@ export default function AdminAttendanceSummary() {
                 <div className="grid grid-cols-3 gap-4">
                     <div className="p-4 rounded bg-white shadow">
                         <h2 className="font-semibold">Total Pegawai</h2>
-                        <p className="text-2xl">{data?.totalEmployees ?? 0}</p>
+                        <p className="text-2xl">{totalEmployees ?? 0}</p>
                     </div>
 
                     <div className="p-4 rounded bg-white shadow">
                         <h2 className="font-semibold">Sudah Absen</h2>
-                        <p className="text-2xl">{data?.alreadyAbsented ?? 0}</p>
+                        <p className="text-2xl">{alreadyAbsented ?? 0}</p>
                     </div>
 
                     <div className="p-4 rounded bg-white shadow">
                         <h2 className="font-semibold">Belum Absen</h2>
-                        <p className="text-2xl">{data?.notYetAbsented ?? 0}</p>
+                        <p className="text-2xl">{notYetAbsented ?? 0}</p>
                     </div>
                 </div>
 
@@ -95,6 +67,10 @@ export default function AdminAttendanceSummary() {
                         <TableRow>
                             <TableCell>Hadir</TableCell>
                             <TableCell className="text-center">{s?.hadir ?? 0}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Terlambat</TableCell>
+                            <TableCell className="text-center">{s?.terlambat ?? 0}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Izin</TableCell>

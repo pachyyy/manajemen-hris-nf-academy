@@ -57,7 +57,7 @@ const getAdminNavItems = (notificationCount: number): NavItem[] => [
     },
     {
         title: 'Laporan',
-        href: laporan(),
+        href: '/laporan/admin',
         icon: ScrollText,
     },
     {
@@ -96,6 +96,11 @@ const getHrNavItems = (notificationCount: number): NavItem[] => [
         icon: BookOpen,
     },
     {
+        title: 'Laporan',
+        href: '/laporan/admin', // Assuming HR also uses the admin view for reports
+        icon: ScrollText,
+    },
+    {
         title: 'Pesan',
         href: '/messages',
         icon: Mail,
@@ -132,6 +137,11 @@ const getNavItems = (roleName: string | undefined, userID: number | undefined, n
                     title: 'Pelatihan',
                     href: pelatihan(),
                     icon: BookOpen,
+                },
+                {
+                    title: 'Laporan',
+                    href: '/laporan/staff',
+                    icon: ScrollText,
                 },
                 {
                     title: 'Pesan',
